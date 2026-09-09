@@ -1,17 +1,17 @@
 .prose {
-    --prose-ink: var(--ink, #1c1b19);
-    --prose-ink-soft: var(--ink-soft, #6f6c66);
-    --prose-mist: var(--mist, #ebe8e2);
-    --prose-line: var(--line, #cfcbc3);
-    --prose-link: var(--link, #1c1b19);
-    --prose-accent: var(--accent, #1c1b19);
-    --prose-accent-deep: var(--accent-deep, #111110);
-    --prose-code-bg: var(--code-bg, #ebe8e2);
+    --prose-ink: var(--ink, #1a1a1a);
+    --prose-ink-soft: var(--ink-soft, #5c5c5c);
+    --prose-mist: var(--mist, #f0f0f0);
+    --prose-line: var(--line, #d9d9d9);
+    --prose-link: var(--link, #1a1a1a);
+    --prose-accent: var(--accent, #1a1a1a);
+    --prose-accent-deep: var(--accent-deep, #000000);
+    --prose-code-bg: var(--code-bg, #f0f0f0);
     --prose-radius: var(--radius, 0);
-    --prose-font: var(--font-display, Georgia, "Songti SC", serif);
+    --prose-font: var(--font-display, "Crimson Pro", "Noto Serif SC", Georgia, "Songti SC", serif);
     --prose-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-    --prose-size: 1.05rem;
-    --prose-leading: 1.75;
+    --prose-size: 1.08rem;
+    --prose-leading: 1.78;
     --prose-block: 1.15em;
 
     font-family: var(--prose-font);
@@ -65,10 +65,13 @@
 
 .prose a {
     color: var(--prose-link);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .prose a:hover {
     color: var(--prose-accent-deep);
+    text-decoration: none;
 }
 
 .prose ul,

@@ -8,7 +8,7 @@ use crate::infra::error::{AppError, AppResult, render};
 use crate::infra::markdown::{render_markdown, render_markdown_with_toc};
 use crate::infra::pagination::{PUBLIC_PER_PAGE, PUBLIC_TAX_PER_PAGE, PageQuery, Pagination};
 use crate::infra::state::AppState;
-use crate::models::{Taxonomy, take_aside_tax};
+use crate::models::{Taxonomy, take_aside_list, take_aside_tax};
 use crate::store::{
     count_published_posts, count_published_posts_by_taxonomy, count_search_hits,
     count_uncategorized_published_posts, find_page_by_slug, find_post_by_slug,
@@ -55,8 +55,8 @@ pub async fn home(
         take_aside_tax(list_categories_with_counts(&state.pool, shell.logged_in).await?);
     let (tags, tags_more) =
         take_aside_tax(list_tags_with_counts(&state.pool, shell.logged_in).await?);
-    let mut books = list_public_kb_books(&state.pool, shell.logged_in).await?;
-    books.truncate(6);
+    let (books, books_more) =
+        take_aside_list(list_public_kb_books(&state.pool, shell.logged_in).await?);
 
     render(HomeTemplate {
         settings: shell.settings,
@@ -67,6 +67,7 @@ pub async fn home(
         tags,
         tags_more,
         books,
+        books_more,
         pagination,
         logged_in: shell.logged_in,
         nav_items: shell.nav_items,
@@ -309,8 +310,8 @@ pub async fn post_detail(
         take_aside_tax(list_categories_with_counts(&state.pool, shell.logged_in).await?);
     let (tags, tags_more) =
         take_aside_tax(list_tags_with_counts(&state.pool, shell.logged_in).await?);
-    let mut books = list_public_kb_books(&state.pool, shell.logged_in).await?;
-    books.truncate(6);
+    let (books, books_more) =
+        take_aside_list(list_public_kb_books(&state.pool, shell.logged_in).await?);
 
     Ok(Err(render(PostTemplate {
         settings: shell.settings,
@@ -322,6 +323,7 @@ pub async fn post_detail(
         tags,
         tags_more,
         books,
+        books_more,
         logged_in: shell.logged_in,
         nav_items: shell.nav_items,
         search_query: shell.search_query,

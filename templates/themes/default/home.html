@@ -23,9 +23,18 @@
           {% if !feat.summary().is_empty() %}
           <p class="feature-summary">{{ feat.summary() }}</p>
           {% endif %}
-          <p class="feature-meta">
-            <time datetime="{{ feat.display_date() }}">{{ feat.short_date() }}</time>
-          </p>
+          <div class="feature-foot">
+            <p class="feature-meta">
+              <time datetime="{{ feat.display_date() }}">{{ feat.short_date() }}</time>
+            </p>
+            {% if feat.has_tags() %}
+            <div class="feature-tags tax-chips" aria-label="标签">
+              {% for t in feat.tags %}
+              <a class="tax-chip is-tag" href="/tags/{{ t.slug }}">{{ t.name }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
         </div>
         {% if feat.has_cover() %}
         <div class="feature-visual">
@@ -92,7 +101,9 @@
           <li><a href="/docs/{{ book.slug }}">{{ book.title }}</a></li>
           {% endfor %}
         </ul>
+        {% if books_more %}
         <p class="aside-more"><a href="/docs">全部</a></p>
+        {% endif %}
       </section>
       {% endif %}
     </aside>

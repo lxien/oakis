@@ -5,7 +5,7 @@
 
 {% block head %}
 {% include "themes/default/components/site_meta.html" %}
-<link rel="stylesheet" href="/static/css/highlight.css?v=5">
+<link rel="stylesheet" href="/static/css/highlight.css?v=7">
 {% endblock %}
 
 {% block body %}
@@ -68,10 +68,6 @@
     {% endif %}
 
     <footer class="post-foot">
-      <div class="post-foot-row">
-        <span class="post-foot-label">作者</span>
-        <span>{{ settings.author_name }}</span>
-      </div>
       {% include "themes/default/components/social_links.html" %}
       <div class="post-foot-actions">
         <a href="/posts">← 返回文章列表</a>
@@ -123,7 +119,9 @@
         <li><a href="/docs/{{ book.slug }}">{{ book.title }}</a></li>
         {% endfor %}
       </ul>
+      {% if books_more %}
       <p class="aside-more"><a href="/docs">全部</a></p>
+      {% endif %}
     </section>
     {% endif %}
   </aside>

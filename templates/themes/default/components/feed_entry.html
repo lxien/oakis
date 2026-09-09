@@ -1,5 +1,6 @@
 <li class="feed-item">
-  <a class="feed-entry{% if !post.has_cover() %} no-thumb{% endif %}" href="/posts/{{ post.slug() }}">
+  <div class="feed-entry{% if !post.has_cover() %} no-thumb{% endif %}">
+    <a class="feed-hit" href="/posts/{{ post.slug() }}" aria-label="{{ post.title() }}"></a>
     <div class="feed-main">
       <h2 class="feed-title">{{ post.title() }}</h2>
       <p class="feed-summary{% if post.summary().is_empty() %} is-empty{% endif %}">{% if !post.summary().is_empty() %}{{ post.summary() }}{% endif %}</p>
@@ -11,7 +12,7 @@
         </div>
         <div class="feed-tags tax-chips" aria-label="标签">
           {% for t in post.tags %}
-          <span class="tax-chip is-tag">{{ t.name }}</span>
+          <a class="tax-chip is-tag" href="/tags/{{ t.slug }}">{{ t.name }}</a>
           {% endfor %}
         </div>
       </div>
@@ -21,5 +22,5 @@
       <img src="{{ post.cover() }}" alt="" loading="lazy">
     </div>
     {% endif %}
-  </a>
+  </div>
 </li>

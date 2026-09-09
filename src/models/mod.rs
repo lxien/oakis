@@ -17,5 +17,5 @@ pub use post::{Post, PostView, RelatedPostRef};
 pub use search::SearchHit;
 pub use settings::{SiteSettings, SocialLink};
 pub use spark::Spark;
-pub use taxonomy::{Taxonomy, TaxonomyCount, take_aside_tax};
+pub use taxonomy::{Taxonomy, TaxonomyCount, take_aside_list, take_aside_tax};
 pub use user::User;

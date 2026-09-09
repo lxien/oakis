@@ -32,9 +32,17 @@ impl Taxonomy {
     }
 }
 
-pub const ASIDE_TAX_LIMIT: usize = 50;
+pub const ASIDE_TAX_LIMIT: usize = 100;
 
 pub fn take_aside_tax(mut items: Vec<TaxonomyCount>) -> (Vec<TaxonomyCount>, bool) {
+    let more = items.len() > ASIDE_TAX_LIMIT;
+    if more {
+        items.truncate(ASIDE_TAX_LIMIT);
+    }
+    (items, more)
+}
+
+pub fn take_aside_list<T>(mut items: Vec<T>) -> (Vec<T>, bool) {
     let more = items.len() > ASIDE_TAX_LIMIT;
     if more {
         items.truncate(ASIDE_TAX_LIMIT);
