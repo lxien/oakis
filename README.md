@@ -3,8 +3,8 @@
 # Oakis
 
 [![Release](https://img.shields.io/github/v/release/lxien/oakis?display_name=tag&sort=semver)](https://github.com/lxien/oakis/releases)
-[![Downloads](https://img.shields.io/github/downloads/lxien/oakis/total)](https://github.com/lxien/oakis/releases)
-[![License](https://img.shields.io/github/license/lxien/oakis)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/lxien/oakis/total?cacheSeconds=3600)](https://github.com/lxien/oakis/releases)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-1.85+-orange.svg)](https://www.rust-lang.org)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/lxien/oakis/releases)
 [![SQLite](https://img.shields.io/badge/DB-SQLite-003B57.svg)](https://www.sqlite.org)
