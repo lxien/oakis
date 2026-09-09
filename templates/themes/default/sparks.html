@@ -1,0 +1,34 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}灵感 · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-sparks{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="home-shell">
+  <section class="list-page">
+    <header class="list-page-head">
+      <h1 class="list-page-title">灵感</h1>
+    </header>
+
+    {% if !items.is_empty() %}
+    <ul class="spark-feed">
+      {% for item in items %}
+      <li class="spark-card">
+        <time class="spark-time" datetime="{{ item.created_at }}">{{ item.short_date() }}</time>
+        <div class="spark-body prose">{{ item.content_html|safe }}</div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% include "themes/default/components/pagination.html" %}
+    {% endif %}
+  </section>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}

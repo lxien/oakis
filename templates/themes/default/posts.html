@@ -1,0 +1,46 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}文章 · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-posts{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="home-shell">
+  <section class="posts-index">
+    <header class="posts-index-head">
+      <h1 class="posts-index-title">文章</h1>
+      <nav class="posts-chips" aria-label="按分类筛选">
+        <a class="posts-chip {% if active_filter.is_empty() %}is-active{% endif %}" href="/posts">全部</a>
+        {% for cat in categories %}
+        <a class="posts-chip {% if active_filter == cat.slug %}is-active{% endif %}" href="/posts?c={{ cat.slug }}">{{ cat.name }}</a>
+        {% endfor %}
+        {% if uncategorized_count > 0 %}
+        <a class="posts-chip {% if active_filter == "-" %}is-active{% endif %}" href="/posts?c=-">未分类</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    {% if !posts.is_empty() %}
+    <ul class="posts-topic-list">
+      {% for post in posts %}
+      <li>
+        <a class="posts-topic-row" href="/posts/{{ post.slug() }}">
+          <span class="posts-topic-row-title">{{ post.title() }}</span>
+          <span class="posts-topic-row-lead" aria-hidden="true"></span>
+          <time datetime="{{ post.display_date() }}">{{ post.short_date() }}</time>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% include "themes/default/components/pagination.html" %}
+    {% endif %}
+  </section>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}

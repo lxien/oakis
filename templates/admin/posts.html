@@ -1,0 +1,84 @@
+{% extends "admin/base.html" %}
+
+{% block title %}文章 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+{% if posts.is_empty() %}
+<div class="admin-card">
+  <div class="admin-card-head">
+    <div class="admin-toolbar">
+      <a class="layui-btn layui-btn-sm" href="/admin/posts/new">新建</a>
+    </div>
+  </div>
+  <div class="admin-empty">暂无数据</div>
+</div>
+{% else %}
+<form class="admin-batch-form" method="post" action="/admin/posts/batch-delete" data-batch-confirm="确定删除选中的 {n} 项？">
+  <input type="hidden" name="ids" value="">
+  <div class="admin-card">
+    <div class="admin-card-head">
+      <div class="admin-toolbar">
+        <a class="layui-btn layui-btn-sm" href="/admin/posts/new">新建</a>
+        <button type="submit" class="layui-btn layui-btn-sm layui-btn-danger admin-batch-delete" disabled>批量删除</button>
+      </div>
+    </div>
+
+    <table class="layui-table" lay-size="sm">
+      <colgroup>
+        <col width="44">
+        <col>
+        <col width="90">
+        <col width="90">
+        <col width="170">
+        <col width="200">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="admin-col-check"><input type="checkbox" class="admin-check-all" title="全选"></th>
+          <th>标题</th>
+          <th>状态</th>
+          <th>可见性</th>
+          <th>更新时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in posts %}
+        <tr>
+          <td class="admin-col-check"><input type="checkbox" class="admin-check-item" value="{{ post.id }}"></td>
+          <td>
+            <a href="/admin/posts/{{ post.id }}/edit">{{ post.title }}</a>
+            <div class="admin-muted">/posts/{{ post.slug }}</div>
+          </td>
+          <td>
+            {% if post.status == "published" %}
+            <span class="layui-badge layui-bg-green">已发布</span>
+            {% else %}
+            <span class="layui-badge layui-bg-gray">草稿</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if post.is_private() %}
+            <span class="layui-badge layui-bg-orange">私密</span>
+            {% else %}
+            <span class="layui-badge layui-bg-blue">公开</span>
+            {% endif %}
+          </td>
+          <td>{{ post.updated_display() }}</td>
+          <td class="admin-table-actions">
+            {% if post.status == "published" %}
+            <a class="layui-btn layui-btn-xs layui-btn-primary" href="/posts/{{ post.slug }}" target="_blank" rel="noopener">查看</a>
+            {% endif %}
+            <a class="layui-btn layui-btn-xs" href="/admin/posts/{{ post.id }}/edit">编辑</a>
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" data-export="post" data-export-id="{{ post.id }}">导出</button>
+            <button type="submit" class="layui-btn layui-btn-xs layui-btn-danger" formaction="/admin/posts/{{ post.id }}/delete" data-confirm="确定删除？">删除</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "admin/_pager.html" %}
+  </div>
+</form>
+{% endif %}
+{% endblock %}

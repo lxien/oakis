@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+
+{% block title %}媒体 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+{% match error %}
+{% when Some with (message) %}
+<div class="admin-toast-error" hidden>{{ message }}</div>
+{% when None %}
+{% endmatch %}
+
+{% if items.is_empty() %}
+<div class="admin-card">
+  <div class="admin-card-head">
+    <div class="admin-toolbar">
+      <button class="layui-btn layui-btn-sm" type="button" id="admin-media-pick">上传</button>
+    </div>
+  </div>
+  <div class="admin-empty">暂无数据</div>
+</div>
+{% else %}
+<form class="admin-batch-form" method="post" action="/admin/media/batch-delete" data-batch-confirm="确定删除选中的 {n} 项？">
+  <input type="hidden" name="ids" value="">
+  <div class="admin-card">
+    <div class="admin-card-head">
+      <div class="admin-toolbar">
+        <button class="layui-btn layui-btn-sm" type="button" id="admin-media-pick">上传</button>
+        <button type="submit" class="layui-btn layui-btn-sm layui-btn-danger admin-batch-delete" disabled>批量删除</button>
+      </div>
+    </div>
+    <table class="layui-table" lay-size="sm">
+      <colgroup>
+        <col width="44">
+        <col width="80">
+        <col>
+        <col width="140">
+        <col width="90">
+        <col width="160">
+        <col width="120">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="admin-col-check"><input type="checkbox" class="admin-check-all" title="全选"></th>
+          <th>预览</th>
+          <th>文件名</th>
+          <th>类型</th>
+          <th>大小</th>
+          <th class="admin-col-datetime">日期</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td class="admin-col-check"><input type="checkbox" class="admin-check-item" value="{{ item.id }}"></td>
+          <td>
+            {% if item.is_image() %}
+            <a href="{{ item.url }}" target="_blank" rel="noopener">
+              <img class="admin-thumb" src="{{ item.thumb_url() }}" alt="" onerror="this.onerror=null;this.src='{{ item.url }}'">
+            </a>
+            {% else %}
+            <span class="admin-file-badge">FILE</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ item.url }}" target="_blank" rel="noopener" title="{{ item.url }}">{{ item.name }}</a>
+          </td>
+          <td><code>{{ item.mime }}</code></td>
+          <td>{{ item.size_label() }}</td>
+          <td class="admin-col-datetime">{{ item.created_display() }}</td>
+          <td class="admin-table-actions">
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" data-copy="{{ item.url }}">复制</button>
+            <button type="submit" class="layui-btn layui-btn-xs layui-btn-danger" formaction="/admin/media/{{ item.id }}/delete" data-confirm="确定删除？">删除</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "admin/_pager.html" %}
+  </div>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/image-crop.js?v=4"></script>
+<script src="/static/js/media-picker.js?v=5"></script>
+{% endblock %}

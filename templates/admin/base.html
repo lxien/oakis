@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="renderer" content="webkit">
+  <title>{% block title %}后台{% endblock %}</title>
+  {% include "admin/_meta.html" %}
+  <link rel="stylesheet" href="/static/layui/css/layui.css">
+  <link rel="stylesheet" href="/static/css/prose.css?v=1">
+  <link rel="stylesheet" href="/static/css/admin.css?v=28">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="admin-layout">
+  <div class="layui-header">
+    <a class="layui-logo layui-bg-black" href="/admin" title="{{ settings.site_title }}">{{ settings.site_title }}</a>
+
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="/" target="_blank" rel="noopener">站点</a>
+      </li>
+      <li class="layui-nav-item" lay-unselect>
+        <a href="javascript:;">{{ username }}<span class="layui-nav-more"></span></a>
+        <dl class="layui-nav-child">
+          <dd><a href="/admin/settings">设置</a></dd>
+          <dd>
+            <form id="admin-logout-form" method="post" action="/logout" hidden></form>
+            <a class="admin-logout-link" href="javascript:;" onclick="document.getElementById('admin-logout-form').submit();">退出</a>
+          </dd>
+        </dl>
+      </li>
+    </ul>
+  </div>
+
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <ul class="layui-nav layui-nav-tree" lay-filter="admin-nav" id="admin-side-nav">
+        <li class="layui-nav-item">
+          <a data-admin-nav href="/admin"><i class="layui-icon layui-icon-home"></i><cite>概览</cite></a>
+        </li>
+
+        <li class="layui-nav-item" data-nav-group="content">
+          <a href="javascript:;"><i class="layui-icon layui-icon-app"></i><cite>内容</cite></a>
+          <dl class="layui-nav-child">
+            <dd><a data-admin-nav href="/admin/posts">文章</a></dd>
+            <dd><a data-admin-nav href="/admin/docs">知识库</a></dd>
+            <dd><a data-admin-nav href="/admin/sparks">灵感</a></dd>
+            <dd><a data-admin-nav href="/admin/pages">页面</a></dd>
+            <dd><a data-admin-nav href="/admin/media">媒体</a></dd>
+          </dl>
+        </li>
+
+        <li class="layui-nav-item" data-nav-group="taxonomy">
+          <a href="javascript:;"><i class="layui-icon layui-icon-cols"></i><cite>分类</cite></a>
+          <dl class="layui-nav-child">
+            <dd><a data-admin-nav href="/admin/taxonomies?kind=category">分类</a></dd>
+            <dd><a data-admin-nav href="/admin/taxonomies?kind=tag">标签</a></dd>
+          </dl>
+        </li>
+
+        <li class="layui-nav-item" data-nav-group="system">
+          <a href="javascript:;"><i class="layui-icon layui-icon-set"></i><cite>系统</cite></a>
+          <dl class="layui-nav-child">
+            <dd><a data-admin-nav href="/admin/nav">导航</a></dd>
+            <dd><a data-admin-nav href="/admin/settings">设置</a></dd>
+          </dl>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="layui-body">
+    <div class="admin-body-pad">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<script src="/static/layui/layui.js"></script>
+<script src="/static/js/csrf.js?v=3"></script>
+<script src="/static/js/admin.js?v=4"></script>
+<script src="/static/js/export-dialog.js?v=1"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

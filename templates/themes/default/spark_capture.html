@@ -1,0 +1,97 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}写灵感 · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-spark-capture{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+<main class="spark-shell">
+  <div class="spark-panel">
+    <header class="spark-panel-head">
+      <div>
+        <p class="spark-kicker">灵感</p>
+        <h1 class="spark-panel-title">写一条</h1>
+      </div>
+      <a class="spark-link" href="/sparks">查看列表</a>
+    </header>
+
+    {% if saved %}
+    <p class="spark-toast" role="status">已保存，可以继续写下一条</p>
+    {% endif %}
+
+    {% match error %}
+    {% when Some with (message) %}
+    <p class="spark-toast spark-toast-err" role="alert">{{ message }}</p>
+    {% when None %}
+    {% endmatch %}
+
+    <form class="spark-form" method="post" action="/spark" id="spark-form">
+      <label class="sr-only" for="spark-content">灵感内容</label>
+      <textarea
+        id="spark-content"
+        name="content_md"
+        rows="10"
+        maxlength="5000"
+        placeholder="把想法记下来…"
+        autofocus
+        required
+      >{{ content_md }}</textarea>
+
+      <div class="spark-toolbar">
+        <div class="spark-seg" role="radiogroup" aria-label="可见性">
+          <label class="spark-seg-item">
+            <input type="radio" name="visibility" value="private"{% if visibility != "public" %} checked{% endif %}>
+            <span>私密</span>
+          </label>
+          <label class="spark-seg-item">
+            <input type="radio" name="visibility" value="public"{% if visibility == "public" %} checked{% endif %}>
+            <span>公开</span>
+          </label>
+        </div>
+
+        <div class="spark-toolbar-right">
+          <span class="spark-count" id="spark-count">0</span>
+          <button class="btn btn-primary spark-save" type="submit">保存</button>
+        </div>
+      </div>
+
+      <p class="spark-hint"><kbd>⌘</kbd> / <kbd>Ctrl</kbd> + <kbd>Enter</kbd> 快速保存</p>
+    </form>
+  </div>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var form = document.getElementById("spark-form");
+  var ta = document.getElementById("spark-content");
+  var count = document.getElementById("spark-count");
+  if (!form || !ta) return;
+
+  function syncCount() {
+    if (!count) return;
+    count.textContent = String(ta.value.length);
+  }
+
+  syncCount();
+  ta.addEventListener("input", syncCount);
+  ta.focus();
+  var len = ta.value.length;
+  ta.setSelectionRange(len, len);
+
+  form.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (typeof form.requestSubmit === "function") form.requestSubmit();
+      else form.submit();
+    }
+  });
+})();
+</script>
+{% endblock %}

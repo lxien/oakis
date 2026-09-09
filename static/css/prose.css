@@ -1,0 +1,237 @@
+.prose {
+    --prose-ink: var(--ink, #1c1b19);
+    --prose-ink-soft: var(--ink-soft, #6f6c66);
+    --prose-mist: var(--mist, #ebe8e2);
+    --prose-line: var(--line, #cfcbc3);
+    --prose-link: var(--link, #1c1b19);
+    --prose-accent: var(--accent, #1c1b19);
+    --prose-accent-deep: var(--accent-deep, #111110);
+    --prose-code-bg: var(--code-bg, #ebe8e2);
+    --prose-radius: var(--radius, 0);
+    --prose-font: var(--font-display, Georgia, "Songti SC", serif);
+    --prose-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    --prose-size: 1.05rem;
+    --prose-leading: 1.75;
+    --prose-block: 1.15em;
+
+    font-family: var(--prose-font);
+    font-size: var(--prose-size);
+    line-height: var(--prose-leading);
+    font-weight: 400;
+    color: var(--prose-ink);
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
+.prose > *:first-child {
+    margin-top: 0;
+}
+
+.prose > *:last-child {
+    margin-bottom: 0;
+}
+
+.prose p {
+    margin: 0 0 var(--prose-block);
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+    font-family: var(--prose-font);
+    color: var(--prose-ink);
+    line-height: 1.35;
+    margin: 1.75em 0 0.7em;
+    font-weight: 600;
+    scroll-margin-top: 5rem;
+}
+
+.prose h1 {
+    font-size: 1.55rem;
+}
+
+.prose h2 {
+    font-size: 1.35rem;
+}
+
+.prose h3 {
+    font-size: 1.15rem;
+}
+
+.prose h4 {
+    font-size: 1.05rem;
+}
+
+.prose a {
+    color: var(--prose-link);
+}
+
+.prose a:hover {
+    color: var(--prose-accent-deep);
+}
+
+.prose ul,
+.prose ol {
+    margin: 0 0 var(--prose-block);
+    padding-left: 1.35em;
+}
+
+.prose ul {
+    list-style: disc;
+}
+
+.prose ol {
+    list-style: decimal;
+}
+
+.prose ul ul {
+    list-style-type: circle;
+    margin: 0.35em 0;
+}
+
+.prose ol ol {
+    list-style-type: lower-alpha;
+    margin: 0.35em 0;
+}
+
+.prose li + li {
+    margin-top: 0.35em;
+}
+
+.prose li > p {
+    margin: 0.2em 0;
+}
+
+.prose li > input[type="checkbox"] {
+    margin: 0 0.45em 0 0;
+    vertical-align: middle;
+}
+
+.prose li:has(> input[type="checkbox"]) {
+    list-style: none;
+    margin-left: -1.1em;
+}
+
+.prose blockquote {
+    margin: 0 0 var(--prose-block);
+    padding: 0.15em 0 0.15em 1em;
+    border-left: 3px solid var(--prose-accent);
+    color: var(--prose-ink-soft);
+}
+
+.prose pre,
+.prose code {
+    font-family: var(--prose-mono);
+    font-size: 0.9em;
+}
+
+.prose :not(pre) > code {
+    background: var(--prose-code-bg);
+    color: var(--prose-ink);
+    padding: 0.12em 0.4em;
+    border-radius: var(--prose-radius);
+    overflow-wrap: anywhere;
+}
+
+.prose pre {
+    background: var(--prose-mist);
+    border: 1px solid var(--prose-line);
+    border-radius: var(--prose-radius);
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    max-width: 100%;
+    margin: 0 0 1.25em;
+}
+
+.prose pre code {
+    background: transparent;
+    padding: 0;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.prose pre code.hljs {
+    background: transparent;
+    padding: 0;
+}
+
+.prose img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--prose-radius);
+    border: 1px solid var(--prose-line);
+    vertical-align: middle;
+}
+
+.prose p:has(> img:only-child) {
+    margin: 0 0 var(--prose-block);
+}
+
+.prose p:has(> img:only-child) img {
+    display: block;
+    margin: 0.4em 0 0;
+}
+
+.prose hr {
+    border: 0;
+    border-top: 1px solid var(--prose-line);
+    margin: 2em 0;
+}
+
+.prose del,
+.prose s {
+    color: var(--prose-ink-soft);
+}
+
+.prose .md-table {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0 0 1.25em;
+    -webkit-overflow-scrolling: touch;
+}
+
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.prose th,
+.prose td {
+    border: 1px solid var(--prose-line);
+    padding: 0.55em 0.8em;
+    text-align: left;
+    vertical-align: top;
+    word-break: normal;
+    overflow-wrap: break-word;
+}
+
+.prose th {
+    background: var(--prose-mist);
+    color: var(--prose-ink);
+    font-weight: 600;
+}
+
+.prose .footnote-definition {
+    margin: 1.5em 0 0;
+    padding-top: 1em;
+    border-top: 1px solid var(--prose-line);
+    font-size: 0.92em;
+    color: var(--prose-ink-soft);
+}
+
+.prose .footnote-definition + .footnote-definition {
+    margin-top: 0.75em;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.prose .footnote-reference,
+.prose .footnote-definition-label {
+    font-size: 0.75em;
+    line-height: 1;
+}

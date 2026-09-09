@@ -1,0 +1,9 @@
+{% if pagination.show() %}
+<div
+  id="admin-pager"
+  data-count="{{ pagination.total }}"
+  data-limit="{{ pagination.per_page }}"
+  data-curr="{{ pagination.page }}"
+  data-base="{{ pagination.base_url }}"
+></div>
+{% endif %}

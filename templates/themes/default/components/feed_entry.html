@@ -1,0 +1,25 @@
+<li class="feed-item">
+  <a class="feed-entry{% if !post.has_cover() %} no-thumb{% endif %}" href="/posts/{{ post.slug() }}">
+    <div class="feed-main">
+      <h2 class="feed-title">{{ post.title() }}</h2>
+      <p class="feed-summary{% if post.summary().is_empty() %} is-empty{% endif %}">{% if !post.summary().is_empty() %}{{ post.summary() }}{% endif %}</p>
+      <div class="feed-foot">
+        <div class="feed-meta">
+          <span class="feed-author">{{ settings.author_name }}</span>
+          <span class="feed-dot" aria-hidden="true"></span>
+          <time datetime="{{ post.display_date() }}">{{ post.short_date() }}</time>
+        </div>
+        <div class="feed-tags tax-chips" aria-label="标签">
+          {% for t in post.tags %}
+          <span class="tax-chip is-tag">{{ t.name }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% if post.has_cover() %}
+    <div class="feed-thumb" aria-hidden="true">
+      <img src="{{ post.cover() }}" alt="" loading="lazy">
+    </div>
+    {% endif %}
+  </a>
+</li>

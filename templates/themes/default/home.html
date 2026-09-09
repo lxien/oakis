@@ -1,0 +1,103 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}{{ settings.site_title }}{% endblock %}
+{% block body_class %}page-home{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="home-shell">
+  <div class="home-layout">
+    <div class="home-primary">
+      {% match featured %}
+      {% when Some with (feat) %}
+      <section class="feature-panel {% if !feat.has_cover() %}no-visual{% endif %}" aria-label="精选文章">
+        <div class="feature-copy">
+          <h1 class="feature-title">
+            <a href="/posts/{{ feat.slug() }}">{{ feat.title() }}</a>
+          </h1>
+          {% if !feat.summary().is_empty() %}
+          <p class="feature-summary">{{ feat.summary() }}</p>
+          {% endif %}
+          <p class="feature-meta">
+            <time datetime="{{ feat.display_date() }}">{{ feat.short_date() }}</time>
+          </p>
+        </div>
+        {% if feat.has_cover() %}
+        <div class="feature-visual">
+          <a href="/posts/{{ feat.slug() }}" tabindex="-1" aria-hidden="true">
+            <img src="{{ feat.cover() }}" alt="">
+          </a>
+        </div>
+        {% endif %}
+      </section>
+      {% when None %}
+      {% endmatch %}
+
+      {% if !posts.is_empty() %}
+      <section class="article-feed" id="articles">
+        <div class="feed-panel">
+          <ul class="feed-list">
+            {% for post in posts %}
+            {% include "themes/default/components/feed_entry.html" %}
+            {% endfor %}
+          </ul>
+          {% include "themes/default/components/pagination.html" %}
+        </div>
+      </section>
+      {% endif %}
+    </div>
+
+    <aside class="home-aside">
+      <section class="aside-card aside-profile" id="about">
+        {% if settings.has_profile_avatar() %}
+        <div class="aside-avatar">
+          <img src="{{ settings.profile_avatar_url() }}" alt="">
+        </div>
+        {% endif %}
+        <a class="aside-author" href="/p/about">{{ settings.author_name }}</a>
+        {% if !settings.site_tagline.is_empty() %}
+        <p class="aside-text">{{ settings.site_tagline }}</p>
+        {% endif %}
+        {% include "themes/default/components/social_links.html" %}
+      </section>
+
+      {% if !categories.is_empty() %}
+      <section class="aside-card">
+        <h2 class="aside-title">分类</h2>
+        <ul class="cat-list">
+          {% for cat in categories %}
+          <li>
+            <a href="/categories/{{ cat.slug }}">{{ cat.name }}<span class="cat-count">{{ cat.post_count }}</span></a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% if categories_more %}
+        <p class="aside-more"><a href="/posts">全部</a></p>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      {% include "themes/default/components/tag_cloud.html" %}
+
+      {% if !books.is_empty() %}
+      <section class="aside-card">
+        <h2 class="aside-title">知识库</h2>
+        <ul class="aside-link-list">
+          {% for book in books %}
+          <li><a href="/docs/{{ book.slug }}">{{ book.title }}</a></li>
+          {% endfor %}
+        </ul>
+        <p class="aside-more"><a href="/docs">全部</a></p>
+      </section>
+      {% endif %}
+    </aside>
+  </div>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}

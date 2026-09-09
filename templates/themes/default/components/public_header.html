@@ -1,0 +1,32 @@
+<header class="site-topbar">
+  <div class="site-topbar-inner">
+    <div class="topbar-left">
+      <a class="logo" href="/">
+        {% if !settings.logo_url.is_empty() %}
+        <img class="logo-img" src="{{ settings.logo_url }}" alt="">
+        {% endif %}
+        <span class="logo-text">{{ settings.site_title }}</span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        {% for item in nav_items %}
+        <a href="{{ item.href }}" class="nav-link {% if item.active %}is-active{% endif %}"{% if item.is_external() %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ item.label }}</a>
+        {% endfor %}
+        {% if logged_in %}
+        <a href="/admin" class="nav-link">后台</a>
+        {% endif %}
+      </nav>
+    </div>
+
+    <div class="topbar-right">
+      <form class="nav-search" action="/search" method="get" role="search">
+        <label class="sr-only" for="nav-q">搜索文章</label>
+        <svg class="nav-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+          <path d="M16.5 16.5L21 21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+        <input id="nav-q" type="text" name="q" placeholder="搜索" maxlength="80" autocomplete="off" enterkeyhint="search" value="{{ search_query }}">
+      </form>
+    </div>
+  </div>
+</header>
+{% include "themes/default/components/corner_actions.html" %}

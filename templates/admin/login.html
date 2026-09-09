@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="renderer" content="webkit">
+  <title>登录</title>
+  {% include "admin/_meta.html" %}
+  <link rel="stylesheet" href="/static/layui/css/layui.css">
+  <link rel="stylesheet" href="/static/css/admin.css?v=25">
+</head>
+<body class="admin-login">
+  <div class="admin-login-wrap">
+    <div class="admin-login-card">
+      {% match error %}
+      {% when Some with (message) %}
+      <div class="layui-bg-red admin-toast-error" role="alert">{{ message }}</div>
+      {% when None %}
+      {% endmatch %}
+
+      <h1 class="admin-login-title">登录</h1>
+      <form class="layui-form" method="post" action="{{ login_path }}" novalidate>
+        {% if !next.is_empty() %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+        <div class="layui-form-item">
+          <input type="text" name="username" value="{{ username }}" lay-verify="required" lay-reqtext="请填写用户名" placeholder="用户名" autocomplete="username" class="layui-input">
+        </div>
+        <div class="layui-form-item">
+          <input type="password" name="password" lay-verify="required" lay-reqtext="请填写密码" placeholder="密码" autocomplete="current-password" class="layui-input">
+        </div>
+        <div class="layui-form-item" style="margin-bottom:0">
+          <button class="layui-btn layui-btn-fluid" lay-submit type="submit">登录</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="/static/js/csrf.js?v=3"></script>
+  <script src="/static/layui/layui.js"></script>
+  <script>
+    layui.use(["form", "layer"], function () {
+      layui.form.render();
+      var err = document.querySelector(".admin-toast-error");
+      if (err) {
+        var text = (err.textContent || "").trim();
+        if (text) layui.layer.msg(text, { icon: 2, time: 3200 });
+      }
+    });
+  </script>
+</body>
+</html>

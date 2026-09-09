@@ -1,0 +1,27 @@
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    {% if settings.has_footer_copyright() %}
+    <span class="site-footer-copy">{{ settings.footer_copyright }}</span>
+    {% endif %}
+    {% if settings.has_footer_text() %}
+    <span class="site-footer-extra">{{ settings.footer_text }}</span>
+    {% endif %}
+    {% if settings.has_icp_beian() || settings.has_gongan_beian() %}
+    <p class="site-footer-beian">
+      {% if settings.has_icp_beian() %}
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">{{ settings.icp_beian }}</a>
+      {% endif %}
+      {% if settings.has_icp_beian() && settings.has_gongan_beian() %}
+      <span class="site-footer-beian-sep" aria-hidden="true">·</span>
+      {% endif %}
+      {% if settings.has_gongan_beian() %}
+        {% if !settings.gongan_beian_url.is_empty() %}
+        <a href="{{ settings.gongan_beian_url }}" target="_blank" rel="noopener noreferrer">{{ settings.gongan_beian }}</a>
+        {% else %}
+        <span>{{ settings.gongan_beian }}</span>
+        {% endif %}
+      {% endif %}
+    </p>
+    {% endif %}
+  </div>
+</footer>

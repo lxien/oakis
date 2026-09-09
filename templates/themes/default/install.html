@@ -1,0 +1,56 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}安装 oakis{% endblock %}
+{% block body_class %}page-install{% endblock %}
+
+{% block body %}
+<main class="install-shell">
+  <section class="install-panel">
+    <header class="install-panel-head">
+      <h1 class="install-brand">oakis</h1>
+    </header>
+
+    {% match error %}
+    {% when Some with (message) %}
+    <div class="alert" role="alert">{{ message }}</div>
+    {% when None %}
+    {% endmatch %}
+
+    <form class="stack-form" method="post" action="/install" novalidate>
+      <fieldset>
+        <legend>站点信息</legend>
+        <label>
+          <span>站点名称<span class="req" aria-hidden="true">*</span></span>
+          <input type="text" name="site_title" value="{{ site_title }}" required maxlength="80" aria-required="true">
+        </label>
+        <label>
+          <span>一句话介绍</span>
+          <input type="text" name="site_tagline" value="{{ site_tagline }}" maxlength="120">
+        </label>
+        <label>
+          <span>作者名称<span class="req" aria-hidden="true">*</span></span>
+          <input type="text" name="author_name" value="{{ author_name }}" required maxlength="60" aria-required="true">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>管理员账号</legend>
+        <label>
+          <span>用户名<span class="req" aria-hidden="true">*</span></span>
+          <input type="text" name="username" value="{{ username }}" required minlength="3" maxlength="40" autocomplete="username" aria-required="true">
+        </label>
+        <label>
+          <span>密码<span class="req" aria-hidden="true">*</span></span>
+          <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="至少 6 位" aria-required="true">
+        </label>
+        <label>
+          <span>确认密码<span class="req" aria-hidden="true">*</span></span>
+          <input type="password" name="password_confirm" required minlength="6" autocomplete="new-password" aria-required="true">
+        </label>
+      </fieldset>
+
+      <button class="btn btn-primary" type="submit">完成安装</button>
+    </form>
+  </section>
+</main>
+{% endblock %}

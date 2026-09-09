@@ -1,0 +1,107 @@
+{% extends "admin/base.html" %}
+
+{% block title %}知识库 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="kb-home">
+  <header class="kb-home-head">
+    <div>
+      <h1 class="kb-home-title">知识库</h1>
+    </div>
+    <button type="button" class="layui-btn" id="kb-open-create">新建知识库</button>
+  </header>
+
+  {% match error %}
+  {% when Some with (message) %}
+  <div class="layui-bg-red admin-toast-error" role="alert" style="color:#fff;padding:10px 12px;margin-bottom:16px;border-radius:2px">{{ message }}</div>
+  {% when None %}
+  {% endmatch %}
+
+  {% if is_empty() %}
+  {% else %}
+  <div class="kb-card-grid">
+    {% for book in books %}
+    <article class="kb-card">
+      <a class="kb-card-body" href="/admin/docs/{{ book.id }}">
+        <span class="kb-card-cover" aria-hidden="true">
+          {% if book.has_cover() %}
+          <img src="{{ book.cover_url }}" alt="">
+          {% else %}
+          <img class="kb-card-fallback" src="/static/icons/zhishiku.svg" alt="">
+          {% endif %}
+        </span>
+        <span class="kb-card-text">
+          <span class="kb-card-name">
+            <span class="kb-card-name-text">{{ book.title }}</span>
+            {% if book.is_private() %}<i class="kb-card-lock" title="私密"></i>{% endif %}
+          </span>
+          <span class="kb-card-summary">{% if !book.summary.is_empty() %}{{ book.summary }}{% endif %}</span>
+          <span class="kb-card-tags">
+            {% if !book.is_published() %}<span class="kb-badge">草稿</span>{% endif %}
+            {% if book.is_private() %}<span class="kb-badge">私密</span>{% else %}<span class="kb-badge">公开</span>{% endif %}
+          </span>
+        </span>
+      </a>
+      <div class="kb-card-actions">
+        <button type="button" class="kb-icon-btn" data-kb-card-more aria-label="更多操作">⋮</button>
+        <div class="kb-menu" hidden>
+          <a href="/admin/docs/books/{{ book.id }}/settings">知识库设置</a>
+          <a href="/docs/{{ book.slug }}" target="_blank" rel="noopener">站点预览</a>
+          <button type="button" data-export="book" data-export-id="{{ book.id }}">导出</button>
+          <hr>
+          <form method="post" action="/admin/docs/books/{{ book.id }}/delete" data-confirm="确定删除该知识库及其全部内容？">
+            <button type="submit" class="is-danger">删除知识库</button>
+          </form>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<template id="kb-create-dialog">
+  <form class="layui-form kb-dialog-form" method="post" action="/admin/docs/books" lay-filter="kb-create">
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span style="color:#FF5722;">*</span>名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="title" required maxlength="80" class="layui-input" placeholder="名称" autocomplete="off">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">简介</label>
+      <div class="layui-input-block">
+        <input type="text" name="summary" maxlength="200" class="layui-input" placeholder="简介" autocomplete="off">
+      </div>
+    </div>
+    <div class="layui-form-item admin-cover-item">
+      <label class="layui-form-label">封面</label>
+      <div class="layui-input-block">
+        <div class="admin-asset-tile admin-asset-tile-cover is-square is-empty" data-asset-tile>
+          <input type="hidden" name="cover_url" value="">
+          <button type="button" class="admin-asset-surface" data-pick title="选择封面">
+            <img class="admin-asset-img admin-asset-img-cover" data-cover-preview alt="" hidden>
+            <span class="admin-asset-placeholder">封面</span>
+          </button>
+          <button type="button" class="admin-asset-x" data-clear aria-label="清除" title="清除">×</button>
+        </div>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">可见性</label>
+      <div class="layui-input-block">
+        <input type="radio" name="visibility" value="public" title="公开" checked>
+        <input type="radio" name="visibility" value="private" title="私密">
+      </div>
+    </div>
+    <input type="hidden" name="slug" value="">
+    <input type="hidden" name="status" value="published">
+  </form>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/image-crop.js?v=4"></script>
+<script src="/static/js/media-picker.js?v=5"></script>
+<script src="/static/js/kb-home.js?v=11"></script>
+{% endblock %}

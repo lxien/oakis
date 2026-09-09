@@ -1,0 +1,136 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}{% if is_home %}{{ book.title }}{% else %}{{ title }} · {{ book.title }}{% endif %} · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-docs{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+<link rel="stylesheet" href="/static/css/highlight.css?v=5">
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<div class="docs-layout">
+  <aside class="docs-sidebar" aria-label="目录">
+    <div class="docs-sidebar-head">
+      <a class="docs-sidebar-back" href="/docs">← 全部知识库</a>
+      <div class="docs-sidebar-title">{{ book.title }}</div>
+    </div>
+    <nav class="docs-side-nav" aria-label="知识库导航">
+      <a class="docs-side-home{% if is_home %} is-active{% endif %}" href="/docs/{{ book.slug }}">首页</a>
+      <div class="docs-side-section">目录</div>
+    </nav>
+    <nav class="docs-tree">
+      {% if !tree_html.is_empty() %}
+      {{ tree_html|safe }}
+      {% endif %}
+    </nav>
+  </aside>
+
+  <main class="docs-main">
+    {% if is_home %}
+    <section class="docs-home" aria-label="知识库首页">
+      <header class="docs-home-head">
+        <div class="docs-home-identity">
+          {% if book.has_cover() %}
+          <img class="docs-home-icon is-cover" src="{{ book.cover_url }}" alt="" width="40" height="40">
+          {% else %}
+          <img class="docs-home-icon" src="/static/icons/zhishiku.svg" alt="" width="40" height="40">
+          {% endif %}
+          <div class="docs-home-meta">
+            <h1 class="docs-home-title">{{ book.title }}</h1>
+            <p class="docs-home-stats">
+              <span>{{ doc_count }} 文档</span>
+              <span class="docs-home-stats-sep" aria-hidden="true">·</span>
+              <span>{{ word_count }} 字</span>
+            </p>
+            {% if has_summary() %}
+            <div class="docs-home-summary prose">{{ content_html|safe }}</div>
+            {% endif %}
+          </div>
+        </div>
+        {% if can_edit() %}
+        <a class="docs-edit" href="{{ edit_url() }}">编辑</a>
+        {% endif %}
+      </header>
+
+      {% if has_catalog() %}
+      <div class="docs-catalog" aria-label="书籍目录">
+        {{ catalog_html|safe }}
+      </div>
+      {% endif %}
+    </section>
+    {% else %}
+    <article class="docs-article">
+      {% if has_crumbs() %}
+      <nav class="docs-crumbs" aria-label="面包屑">
+        <a href="/docs">知识库</a>
+        <span class="docs-crumbs-sep" aria-hidden="true">/</span>
+        <a href="/docs/{{ book.slug }}">{{ book.title }}</a>
+        {% for c in crumbs %}
+        <span class="docs-crumbs-sep" aria-hidden="true">/</span>
+        {% if c.has_href() %}
+        <a href="{{ c.href_value() }}">{{ c.title }}</a>
+        {% else %}
+        <span>{{ c.title }}</span>
+        {% endif %}
+        {% endfor %}
+      </nav>
+      {% endif %}
+
+      <header class="docs-head">
+        <h1 class="docs-title">{{ title }}</h1>
+        {% if can_edit() %}
+        <a class="docs-edit" href="{{ edit_url() }}">编辑</a>
+        {% endif %}
+      </header>
+
+      <div class="prose">
+        {{ content_html|safe }}
+      </div>
+
+      {% if has_nav() %}
+      <nav class="docs-pager" aria-label="相邻页面">
+        <div class="docs-pager-prev">
+          {% match prev %}
+          {% when Some with (p) %}
+          <a href="{{ p.href }}"><span class="docs-pager-label">上一篇</span><span class="docs-pager-title">{{ p.title }}</span></a>
+          {% when None %}
+          {% endmatch %}
+        </div>
+        <div class="docs-pager-next">
+          {% match next %}
+          {% when Some with (n) %}
+          <a href="{{ n.href }}"><span class="docs-pager-label">下一篇</span><span class="docs-pager-title">{{ n.title }}</span></a>
+          {% when None %}
+          {% endmatch %}
+        </div>
+      </nav>
+      {% endif %}
+    </article>
+    {% endif %}
+  </main>
+</div>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/highlight.min.js" defer></script>
+<script src="/static/js/highlight-init.js" defer></script>
+{% if is_home %}
+<script>
+document.querySelector(".docs-catalog")?.addEventListener("click", function (e) {
+  var btn = e.target.closest("button.docs-catalog-toggle");
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  var item = btn.closest(".docs-catalog-item");
+  if (!item || !item.classList.contains("has-children")) return;
+  var open = item.classList.toggle("is-open");
+  btn.setAttribute("aria-expanded", open ? "true" : "false");
+});
+</script>
+{% endif %}
+{% endblock %}

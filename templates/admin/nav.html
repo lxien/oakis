@@ -1,0 +1,129 @@
+{% extends "admin/base.html" %}
+
+{% block title %}导航 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="admin-card admin-settings">
+  {% match error %}
+  {% when Some with (message) %}
+  <div class="layui-bg-red admin-toast-error" role="alert" style="color:#fff;padding:10px 12px;margin-bottom:12px;border-radius:2px">{{ message }}</div>
+  {% when None %}
+  {% endmatch %}
+
+  <form class="layui-form" method="post" action="/admin/nav" novalidate>
+    <fieldset class="layui-elem-field">
+      <legend>站点主导航</legend>
+      <div class="layui-field-box">
+        <div id="nav-items" class="nav-editor" data-max="16">
+          {% for item in items %}
+          {% if item.is_builtin() %}
+          <div class="admin-nav-row nav-row is-fixed" data-kind="builtin" data-fixed="1">
+            <input type="hidden" name="nav_type" value="builtin">
+            <input type="hidden" name="nav_key" value="{{ item.key }}">
+            <input type="hidden" name="nav_page_id" value="">
+            <input type="hidden" name="nav_url" value="">
+            <span class="admin-nav-fixed-name">{{ item.builtin_default_label() }}</span>
+            <div class="layui-input-inline admin-nav-label">
+              <input type="text" name="nav_label" value="{{ item.label }}" maxlength="40" placeholder="自定义名称" class="layui-input">
+            </div>
+            <div class="layui-input-inline admin-nav-enabled">
+              <select name="nav_enabled" lay-ignore>
+                <option value="1" {% if item.enabled %}selected{% endif %}>显示</option>
+                <option value="0" {% if !item.enabled %}selected{% endif %}>隐藏</option>
+              </select>
+            </div>
+            <div class="layui-btn-group">
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="-1">↑</button>
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="1">↓</button>
+            </div>
+          </div>
+          {% else %}
+          <div class="admin-nav-row nav-row" data-kind="{{ item.kind }}">
+            <div class="layui-input-inline admin-nav-type">
+              <select name="nav_type" lay-ignore data-nav-type>
+                <option value="page" {% if item.is_page() %}selected{% endif %}>页面</option>
+                <option value="custom" {% if item.is_custom() %}selected{% endif %}>链接</option>
+              </select>
+            </div>
+            <input type="hidden" name="nav_key" value="">
+            <div class="layui-input-inline admin-nav-page" data-field="page">
+              <select name="nav_page_id" lay-ignore>
+                <option value="">选择页面</option>
+                {% for page in pages %}
+                <option value="{{ page.id }}" {% if item.page_id_value() == page.id %}selected{% endif %}>{{ page.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="layui-input-inline admin-nav-url" data-field="url">
+              <input type="text" name="nav_url" value="{{ item.url }}" maxlength="500" placeholder="https:// 或 /path" class="layui-input">
+            </div>
+            <div class="layui-input-inline admin-nav-label">
+              <input type="text" name="nav_label" value="{{ item.label }}" maxlength="40" placeholder="显示名" class="layui-input">
+            </div>
+            <div class="layui-input-inline admin-nav-enabled">
+              <select name="nav_enabled" lay-ignore>
+                <option value="1" {% if item.enabled %}selected{% endif %}>显示</option>
+                <option value="0" {% if !item.enabled %}selected{% endif %}>隐藏</option>
+              </select>
+            </div>
+            <div class="layui-btn-group">
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="-1">↑</button>
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="1">↓</button>
+              <button type="button" class="layui-btn layui-btn-danger layui-btn-sm" data-remove>×</button>
+            </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="nav-add">添加</button>
+
+        <template id="nav-row-template">
+          <div class="admin-nav-row nav-row" data-kind="page">
+            <div class="layui-input-inline admin-nav-type">
+              <select name="nav_type" lay-ignore data-nav-type>
+                <option value="page" selected>页面</option>
+                <option value="custom">链接</option>
+              </select>
+            </div>
+            <input type="hidden" name="nav_key" value="">
+            <div class="layui-input-inline admin-nav-page" data-field="page">
+              <select name="nav_page_id" lay-ignore>
+                <option value="">选择页面</option>
+                {% for page in pages %}
+                <option value="{{ page.id }}">{{ page.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="layui-input-inline admin-nav-url" data-field="url">
+              <input type="text" name="nav_url" value="" maxlength="500" placeholder="https:// 或 /path" class="layui-input">
+            </div>
+            <div class="layui-input-inline admin-nav-label">
+              <input type="text" name="nav_label" value="" maxlength="40" placeholder="显示名" class="layui-input">
+            </div>
+            <div class="layui-input-inline admin-nav-enabled">
+              <select name="nav_enabled" lay-ignore>
+                <option value="1" selected>显示</option>
+                <option value="0">隐藏</option>
+              </select>
+            </div>
+            <div class="layui-btn-group">
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="-1">↑</button>
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="1">↓</button>
+              <button type="button" class="layui-btn layui-btn-danger layui-btn-sm" data-remove>×</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </fieldset>
+
+    <div class="layui-form-item admin-edit-actions">
+      <button class="layui-btn layui-btn-sm" lay-submit type="submit">保存</button>
+      <a class="layui-btn layui-btn-sm layui-btn-primary" href="/" target="_blank" rel="noopener">站点预览</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/nav-settings.js?v=2"></script>
+{% endblock %}

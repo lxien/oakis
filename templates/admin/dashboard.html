@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+
+{% block title %}概览 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="dash">
+  <div class="dash-actions">
+    <a class="layui-btn layui-btn-sm" href="/admin/posts/new">写文章</a>
+    <a class="layui-btn layui-btn-sm layui-btn-primary" href="/spark" target="_blank" rel="noopener">记灵感</a>
+    <a class="layui-btn layui-btn-sm layui-btn-primary" href="/admin/docs">知识库</a>
+    <a class="layui-btn layui-btn-sm layui-btn-primary" href="/admin/media">媒体</a>
+  </div>
+
+  <div class="dash-stats">
+    <a class="dash-stat" href="/admin/posts">
+      <span class="dash-stat-num">{{ dash.posts_total() }}</span>
+      <span class="dash-stat-label">文章</span>
+      <span class="dash-stat-meta">已发布 {{ dash.posts_published }} · 草稿 {{ dash.posts_draft }}</span>
+    </a>
+    <a class="dash-stat" href="/admin/pages">
+      <span class="dash-stat-num">{{ dash.page_count }}</span>
+      <span class="dash-stat-label">页面</span>
+    </a>
+    <a class="dash-stat" href="/admin/docs">
+      <span class="dash-stat-num">{{ dash.book_count }}</span>
+      <span class="dash-stat-label">知识库</span>
+    </a>
+    <a class="dash-stat" href="/admin/sparks">
+      <span class="dash-stat-num">{{ dash.spark_count }}</span>
+      <span class="dash-stat-label">灵感</span>
+    </a>
+    <a class="dash-stat" href="/admin/media">
+      <span class="dash-stat-num">{{ dash.media_count }}</span>
+      <span class="dash-stat-label">媒体</span>
+    </a>
+  </div>
+
+  {% if dash.has_recent() || dash.has_pending() %}
+  <div class="dash-columns">
+    {% if dash.has_recent() %}
+    <section class="dash-panel dash-panel--recent">
+      <header class="dash-panel-head">
+        <h2 class="dash-panel-title">最近编辑</h2>
+      </header>
+      <ul class="dash-list">
+        {% for item in dash.recent %}
+        <li>
+          <a class="dash-row" href="{{ item.href() }}">
+            <span class="dash-row-kind">{{ item.kind_label() }}</span>
+            <span class="dash-row-title">{{ item.title }}</span>
+            <span class="dash-row-aside">
+              {% if item.is_draft() %}<span class="dash-row-badge">草稿</span>{% endif %}
+              <time class="dash-row-time" datetime="{{ item.updated_at }}">{{ item.when() }}</time>
+            </span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    {% if dash.has_pending() %}
+    <section class="dash-panel dash-panel--pending">
+      <header class="dash-panel-head">
+        <h2 class="dash-panel-title">待处理</h2>
+        <span class="dash-panel-count">{{ dash.pending.len() }}</span>
+      </header>
+      <ul class="dash-list">
+        {% for item in dash.pending %}
+        <li>
+          <a class="dash-row" href="{{ item.href() }}">
+            <span class="dash-row-kind">{{ item.kind_label() }}</span>
+            <span class="dash-row-title">{{ item.title }}</span>
+            <span class="dash-row-aside">
+              <span class="dash-row-badge">草稿</span>
+              <time class="dash-row-time" datetime="{{ item.updated_at }}">{{ item.when() }}</time>
+            </span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

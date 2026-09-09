@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+
+{% block title %}灵感 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+{% if items.is_empty() %}
+<div class="admin-card">
+  <div class="admin-card-head">
+    <div class="admin-toolbar">
+      <a class="layui-btn layui-btn-sm" href="/spark" target="_blank" rel="noopener">去写一条</a>
+    </div>
+  </div>
+  <div class="admin-empty">暂无数据</div>
+</div>
+{% else %}
+<form class="admin-batch-form" method="post" action="/admin/sparks/batch-delete" data-batch-confirm="确定删除选中的 {n} 项？">
+  <input type="hidden" name="ids" value="">
+  <div class="admin-card">
+    <div class="admin-card-head">
+      <div class="admin-toolbar">
+        <a class="layui-btn layui-btn-sm" href="/spark" target="_blank" rel="noopener">去写一条</a>
+        <button type="submit" class="layui-btn layui-btn-sm layui-btn-danger admin-batch-delete" disabled>批量删除</button>
+      </div>
+    </div>
+
+    <table class="layui-table" lay-size="sm">
+      <colgroup>
+        <col width="44">
+        <col>
+        <col width="90">
+        <col width="120">
+        <col width="220">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="admin-col-check"><input type="checkbox" class="admin-check-all" title="全选"></th>
+          <th>内容</th>
+          <th>可见性</th>
+          <th>时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td class="admin-col-check"><input type="checkbox" class="admin-check-item" value="{{ item.id }}"></td>
+          <td>
+            <a href="/admin/sparks/{{ item.id }}/edit">{{ item.excerpt() }}</a>
+          </td>
+          <td>
+            {% if item.is_private() %}
+            <span class="layui-badge layui-bg-orange">私密</span>
+            {% else %}
+            <span class="layui-badge layui-bg-blue">公开</span>
+            {% endif %}
+          </td>
+          <td>{{ item.short_date() }}</td>
+          <td class="admin-table-actions">
+            <a class="layui-btn layui-btn-xs" href="/admin/sparks/{{ item.id }}/edit">编辑</a>
+            <button type="submit" class="layui-btn layui-btn-xs layui-btn-normal" formaction="/admin/sparks/{{ item.id }}/to-post" formmethod="post" data-confirm="升格为草稿文章？灵感仍会保留。">升格文章</button>
+            <button type="submit" class="layui-btn layui-btn-xs layui-btn-danger" formaction="/admin/sparks/{{ item.id }}/delete" data-confirm="确定删除？">删除</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "admin/_pager.html" %}
+  </div>
+</form>
+{% endif %}
+{% endblock %}

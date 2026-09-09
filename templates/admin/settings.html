@@ -1,0 +1,321 @@
+{% extends "admin/base.html" %}
+
+{% block title %}设置 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="admin-card admin-settings">
+  {% match error %}
+  {% when Some with (message) %}
+  <div class="layui-bg-red admin-toast-error" role="alert" style="color:#fff;padding:10px 12px;margin-bottom:12px;border-radius:2px">{{ message }}</div>
+  {% when None %}
+  {% endmatch %}
+
+  <form class="layui-form" method="post" action="/admin/settings" novalidate>
+    <fieldset class="layui-elem-field">
+      <legend>头像</legend>
+      <div class="layui-field-box">
+        <div class="layui-form-item">
+          <label class="layui-form-label">头像</label>
+          <div class="layui-input-block">
+            <div class="admin-asset-tile admin-asset-tile-avatar {% if settings.avatar_url.is_empty() %}is-empty{% endif %}" id="avatar-tile" data-asset-tile>
+              <input type="hidden" name="avatar_url" value="{{ settings.avatar_url }}">
+              <button type="button" class="admin-asset-surface" data-pick title="选择图片">
+                {% if !settings.avatar_url.is_empty() %}
+                <img class="admin-asset-img" src="{{ settings.avatar_url }}" alt="">
+                {% else %}
+                <img class="admin-asset-img" alt="" hidden>
+                {% endif %}
+                <span class="admin-asset-placeholder">头像</span>
+              </button>
+              <button type="button" class="admin-asset-x" data-clear aria-label="清除" title="清除">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field admin-settings-section">
+      <legend>基本信息</legend>
+      <div class="layui-field-box">
+        <div class="layui-form-item">
+          <label class="layui-form-label"><span style="color:#FF5722;">*</span>站点标题</label>
+          <div class="layui-input-block">
+            <input type="text" name="site_title" value="{{ settings.site_title }}" lay-verify="required" lay-reqtext="请填写站点标题" maxlength="80" class="layui-input" placeholder="站点名称">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">副标题</label>
+          <div class="layui-input-block">
+            <input type="text" name="site_tagline" value="{{ settings.site_tagline }}" maxlength="160" class="layui-input" placeholder="一句话简介">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label"><span style="color:#FF5722;">*</span>作者名</label>
+          <div class="layui-input-block">
+            <input type="text" name="author_name" value="{{ settings.author_name }}" lay-verify="required" lay-reqtext="请填写作者名" maxlength="40" class="layui-input" placeholder="作者">
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field admin-settings-section">
+      <legend>站点访问</legend>
+      <div class="layui-field-box">
+        <div class="layui-form-item">
+          <div class="layui-input-block" style="margin-left:0">
+            <input type="radio" name="site_access" value="public" title="公开" {% if settings.is_access_public() %}checked{% endif %}>
+            <input type="radio" name="site_access" value="maintenance" title="维护" {% if settings.is_access_maintenance() %}checked{% endif %}>
+            <input type="radio" name="site_access" value="private" title="私密" {% if settings.is_access_private() %}checked{% endif %}>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field admin-settings-section">
+      <legend>社交链接</legend>
+      <div class="layui-field-box">
+        <div id="social-links" class="social-editor" data-max="12">
+          {% for link in settings.social_links %}
+          <div class="admin-social-row social-row">
+            <div class="layui-input-inline admin-social-kind">
+              <select name="social_kind" lay-ignore>
+                <option value="github" {% if link.is_github() %}selected{% endif %}>GitHub</option>
+                <option value="gitee" {% if link.is_gitee() %}selected{% endif %}>Gitee</option>
+                <option value="site" {% if link.is_site() %}selected{% endif %}>个人站</option>
+                <option value="email" {% if link.is_email() %}selected{% endif %}>邮箱</option>
+                <option value="twitter" {% if link.is_twitter() %}selected{% endif %}>X / Twitter</option>
+                <option value="bilibili" {% if link.is_bilibili() %}selected{% endif %}>Bilibili</option>
+                <option value="rss" {% if link.is_rss() %}selected{% endif %}>RSS</option>
+                <option value="custom" {% if link.kind == "custom" %}selected{% endif %}>自定义</option>
+              </select>
+            </div>
+            <div class="layui-input-inline admin-social-label">
+              <input type="text" name="social_label" value="{{ link.label }}" maxlength="40" placeholder="显示名" class="layui-input">
+            </div>
+            <div class="layui-input-inline admin-social-url">
+              <input type="text" name="social_url" value="{{ link.url }}" maxlength="500" placeholder="https:// 或 mailto:" class="layui-input">
+            </div>
+            <div class="layui-btn-group">
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="-1">↑</button>
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="1">↓</button>
+              <button type="button" class="layui-btn layui-btn-danger layui-btn-sm" data-remove>×</button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="social-add">添加</button>
+        <template id="social-row-template">
+          <div class="admin-social-row social-row">
+            <div class="layui-input-inline admin-social-kind">
+              <select name="social_kind" lay-ignore>
+                <option value="github">GitHub</option>
+                <option value="gitee">Gitee</option>
+                <option value="site" selected>个人站</option>
+                <option value="email">邮箱</option>
+                <option value="twitter">X / Twitter</option>
+                <option value="bilibili">Bilibili</option>
+                <option value="rss">RSS</option>
+                <option value="custom">自定义</option>
+              </select>
+            </div>
+            <div class="layui-input-inline admin-social-label">
+              <input type="text" name="social_label" value="个人站" maxlength="40" placeholder="显示名" class="layui-input">
+            </div>
+            <div class="layui-input-inline admin-social-url">
+              <input type="text" name="social_url" value="" maxlength="500" placeholder="https:// 或 mailto:" class="layui-input">
+            </div>
+            <div class="layui-btn-group">
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="-1">↑</button>
+              <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" data-move="1">↓</button>
+              <button type="button" class="layui-btn layui-btn-danger layui-btn-sm" data-remove>×</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field admin-settings-section">
+      <legend>品牌</legend>
+      <div class="layui-field-box">
+        <div class="layui-form-item">
+          <label class="layui-form-label">Logo</label>
+          <div class="layui-input-block">
+            <div class="admin-asset-tile admin-asset-tile-logo {% if settings.logo_url.is_empty() %}is-empty{% endif %}" id="logo-tile" data-asset-tile>
+              <input type="hidden" name="logo_url" value="{{ settings.logo_url }}">
+              <button type="button" class="admin-asset-surface" data-pick title="选择图片">
+                {% if !settings.logo_url.is_empty() %}
+                <img class="admin-asset-img" src="{{ settings.logo_url }}" alt="">
+                {% else %}
+                <img class="admin-asset-img" alt="" hidden>
+                {% endif %}
+                <span class="admin-asset-placeholder">Logo</span>
+              </button>
+              <button type="button" class="admin-asset-x" data-clear aria-label="清除" title="清除">×</button>
+            </div>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">Favicon</label>
+          <div class="layui-input-block">
+            <div class="admin-asset-tile admin-asset-tile-favicon {% if settings.favicon_url.is_empty() %}is-empty{% endif %}" id="favicon-tile" data-asset-tile>
+              <input type="hidden" name="favicon_url" value="{{ settings.favicon_url }}">
+              <button type="button" class="admin-asset-surface" data-pick title="选择图片">
+                {% if !settings.favicon_url.is_empty() %}
+                <img class="admin-asset-img" src="{{ settings.favicon_url }}" alt="">
+                {% else %}
+                <img class="admin-asset-img" alt="" hidden>
+                {% endif %}
+                <span class="admin-asset-placeholder">Icon</span>
+              </button>
+              <button type="button" class="admin-asset-x" data-clear aria-label="清除" title="清除">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field admin-settings-section">
+      <legend>SEO</legend>
+      <div class="layui-field-box">
+        <div class="layui-form-item">
+          <label class="layui-form-label">关键词</label>
+          <div class="layui-input-block">
+            <input type="text" name="seo_keywords" value="{{ settings.seo_keywords }}" maxlength="200" class="layui-input" placeholder="关键词，逗号分隔">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">描述</label>
+          <div class="layui-input-block">
+            <textarea name="seo_description" maxlength="300" class="layui-textarea" style="min-height:80px" placeholder="用于搜索引擎摘要">{{ settings.seo_description }}</textarea>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field admin-settings-section">
+      <legend>页脚</legend>
+      <div class="layui-field-box">
+        <div class="layui-form-item">
+          <label class="layui-form-label">ICP 备案</label>
+          <div class="layui-input-block">
+            <input type="text" name="icp_beian" value="{{ settings.icp_beian }}" maxlength="80" placeholder="ICP 备案号" class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">公安备案</label>
+          <div class="layui-input-block">
+            <input type="text" name="gongan_beian" value="{{ settings.gongan_beian }}" maxlength="80" placeholder="公安备案号" class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">公安链接</label>
+          <div class="layui-input-block">
+            <input type="url" name="gongan_beian_url" value="{{ settings.gongan_beian_url }}" maxlength="500" placeholder="备案查询链接" class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">版权文案</label>
+          <div class="layui-input-block">
+            <input type="text" name="footer_copyright" value="{{ settings.footer_copyright }}" maxlength="160" placeholder="© 年份 站点名" class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">附加文案</label>
+          <div class="layui-input-block">
+            <input type="text" name="footer_text" value="{{ settings.footer_text }}" maxlength="160" placeholder="页脚补充说明" class="layui-input">
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="layui-form-item admin-edit-actions">
+      <button class="layui-btn layui-btn-sm" lay-submit type="submit">保存</button>
+    </div>
+  </form>
+</div>
+
+<div class="admin-card">
+  <form class="layui-form" method="post" action="/admin/settings/password" novalidate>
+    <fieldset class="layui-elem-field">
+      <legend>修改密码</legend>
+      <div class="layui-field-box">
+        <div class="layui-form-item">
+          <label class="layui-form-label"><span style="color:#FF5722;">*</span>当前密码</label>
+          <div class="layui-input-block">
+            <input type="password" name="current_password" lay-verify="required" lay-reqtext="请填写当前密码" autocomplete="current-password" class="layui-input" placeholder="当前密码">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label"><span style="color:#FF5722;">*</span>新密码</label>
+          <div class="layui-input-block">
+            <input type="password" name="new_password" lay-verify="required" lay-reqtext="请填写新密码" minlength="6" autocomplete="new-password" class="layui-input" placeholder="至少 6 位">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label"><span style="color:#FF5722;">*</span>确认密码</label>
+          <div class="layui-input-block">
+            <input type="password" name="confirm_password" lay-verify="required" lay-reqtext="请确认新密码" minlength="6" autocomplete="new-password" class="layui-input" placeholder="再次输入">
+          </div>
+        </div>
+        <div class="layui-form-item" style="margin-bottom:0">
+          <div class="layui-input-block">
+            <button class="layui-btn layui-btn-sm" lay-submit type="submit">修改密码</button>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/image-crop.js?v=4"></script>
+<script src="/static/js/media-picker.js?v=5"></script>
+<script src="/static/js/social-settings.js?v=2"></script>
+<script>
+layui.use(["jquery"], function () {
+  var $ = layui.$;
+
+  function bindAssetTile(sel, crop) {
+    var $tile = $(sel);
+    if (!$tile.length) return;
+    var $url = $tile.find('input[type="hidden"]');
+    var $img = $tile.find(".admin-asset-img");
+
+    function setUrl(url) {
+      $url.val(url || "");
+      if (url) {
+        $img.attr("src", url).prop("hidden", false);
+        $tile.removeClass("is-empty");
+      } else {
+        $img.removeAttr("src").prop("hidden", true);
+        $tile.addClass("is-empty");
+      }
+    }
+
+    $tile.on("click", "[data-pick]", function (e) {
+      e.preventDefault();
+      if (!window.OakisMediaPicker) return;
+      var opts = {
+        kind: "image",
+        onSelect: function (item) {
+          setUrl(item.url);
+        },
+      };
+      if (crop) opts.crop = crop;
+      OakisMediaPicker.open(opts);
+    });
+
+    $tile.on("click", "[data-clear]", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      setUrl("");
+    });
+  }
+
+  bindAssetTile("#avatar-tile", { aspectRatio: 1, maxEdge: 512 });
+  bindAssetTile("#logo-tile", { aspectRatio: 1, maxEdge: 512 });
+  bindAssetTile("#favicon-tile", { aspectRatio: 1, maxEdge: 256 });
+});
+</script>
+{% endblock %}

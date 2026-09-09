@@ -1,0 +1,151 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}{{ post.title() }} · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-post{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+<link rel="stylesheet" href="/static/css/highlight.css?v=5">
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="post-shell">
+  <article class="post-card">
+    <header class="post-head">
+      <h1 class="post-title">{{ post.title() }}</h1>
+      <div class="post-meta">
+        <span>{{ settings.author_name }}</span>
+        <span class="post-meta-sep" aria-hidden="true"></span>
+        <time datetime="{{ post.display_date() }}">{{ post.short_date() }}</time>
+        <span class="post-meta-sep" aria-hidden="true"></span>
+        <span class="post-meta-item" title="阅读时长">
+          <svg class="post-meta-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          阅读约 {{ post.reading_minutes() }} 分钟
+        </span>
+        {% if logged_in %}
+        <span class="post-meta-sep" aria-hidden="true"></span>
+        {% if post.is_private() %}
+        <span class="pill pill-private">仅自己可见</span>
+        <span class="post-meta-sep" aria-hidden="true"></span>
+        {% endif %}
+        <a class="post-edit" href="/admin/posts/{{ post.id() }}/edit">编辑</a>
+        {% endif %}
+      </div>
+      {% if !post.summary().is_empty() %}
+      <p class="post-lead">{{ post.summary() }}</p>
+      {% endif %}
+    </header>
+
+    <div class="prose">
+      {{ post.content_html()|safe }}
+    </div>
+
+    {% if post.has_categories() || post.has_tags() %}
+    <div class="post-tags tax-chips">
+      {% for c in post.categories %}
+      <a class="tax-chip is-cat" href="/categories/{{ c.slug }}">{{ c.name }}</a>
+      {% endfor %}
+      {% for t in post.tags %}
+      <a class="tax-chip is-tag" href="/tags/{{ t.slug }}">{{ t.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if !related.is_empty() %}
+    <section class="post-related" aria-label="相关文章">
+      <h2 class="post-related-title">相关文章</h2>
+      <ul class="post-related-list">
+        {% for r in related %}
+        <li>
+          <a href="/posts/{{ r.slug }}">{{ r.title }}</a>
+          <time datetime="{{ r.display_date() }}">({{ r.short_date() }})</time>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <footer class="post-foot">
+      <div class="post-foot-row">
+        <span class="post-foot-label">作者</span>
+        <span>{{ settings.author_name }}</span>
+      </div>
+      {% include "themes/default/components/social_links.html" %}
+      <div class="post-foot-actions">
+        <a href="/posts">← 返回文章列表</a>
+      </div>
+    </footer>
+  </article>
+
+  {% if toc.len() >= 2 || !categories.is_empty() || !books.is_empty() %}
+  <aside class="post-aside">
+    {% if toc.len() >= 2 %}
+    <section class="aside-card post-toc-card" id="post-toc-card" aria-label="文章目录">
+      <div class="post-toc-head">
+        <h2 class="aside-title post-toc-title">目录</h2>
+        <button type="button" class="post-toc-toggle" id="post-toc-toggle" aria-expanded="true" aria-controls="post-toc-body">收起</button>
+      </div>
+      <nav class="post-toc-body" id="post-toc-body">
+        <ol class="post-toc-list">
+          {% for item in toc %}
+          <li class="post-toc-l{{ item.level }}"><a href="#{{ item.id }}">{{ item.text }}</a></li>
+          {% endfor %}
+        </ol>
+      </nav>
+    </section>
+    {% endif %}
+
+    {% if !categories.is_empty() %}
+    <section class="aside-card">
+      <h2 class="aside-title">分类</h2>
+      <ul class="cat-list">
+        {% for cat in categories %}
+        <li>
+          <a href="/categories/{{ cat.slug }}">{{ cat.name }}<span class="cat-count">{{ cat.post_count }}</span></a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% if categories_more %}
+      <p class="aside-more"><a href="/posts">全部</a></p>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {% include "themes/default/components/tag_cloud.html" %}
+
+    {% if !books.is_empty() %}
+    <section class="aside-card">
+      <h2 class="aside-title">知识库</h2>
+      <ul class="aside-link-list">
+        {% for book in books %}
+        <li><a href="/docs/{{ book.slug }}">{{ book.title }}</a></li>
+        {% endfor %}
+      </ul>
+      <p class="aside-more"><a href="/docs">全部</a></p>
+    </section>
+    {% endif %}
+  </aside>
+  {% endif %}
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/highlight.min.js" defer></script>
+<script src="/static/js/highlight-init.js" defer></script>
+<script>
+(function () {
+  var card = document.getElementById("post-toc-card");
+  var btn = document.getElementById("post-toc-toggle");
+  if (!card || !btn) return;
+  btn.addEventListener("click", function () {
+    var collapsed = card.classList.toggle("is-collapsed");
+    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    btn.textContent = collapsed ? "展开" : "收起";
+  });
+})();
+</script>
+{% endblock %}

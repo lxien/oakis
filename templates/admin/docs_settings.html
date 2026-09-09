@@ -1,0 +1,133 @@
+{% extends "admin/base.html" %}
+
+{% block title %}设置 · {{ book.title }} · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="kb-settings">
+  <div class="kb-settings-nav">
+    <a href="/admin/docs">← 全部知识库</a>
+    <span class="kb-settings-sep">/</span>
+    <a href="/admin/docs/{{ book.id }}">{{ book.title }}</a>
+    <span class="kb-settings-sep">/</span>
+    <span>设置</span>
+  </div>
+
+  <div class="admin-card kb-settings-card">
+    <h1 class="kb-settings-title">知识库设置</h1>
+
+    {% match error %}
+    {% when Some with (message) %}
+    <div class="layui-bg-red admin-toast-error" role="alert" style="color:#fff;padding:10px 12px;margin-bottom:12px;border-radius:2px">{{ message }}</div>
+    {% when None %}
+    {% endmatch %}
+
+    <form class="layui-form" method="post" action="/admin/docs/books/{{ book.id }}/save" novalidate>
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span style="color:#FF5722;">*</span>名称</label>
+        <div class="layui-input-block">
+          <input type="text" name="title" value="{{ book.title }}" class="layui-input" maxlength="80" required lay-verify="required">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">Slug</label>
+        <div class="layui-input-block">
+          <input type="text" name="slug" value="{{ book.slug }}" class="layui-input" maxlength="80" placeholder="Slug">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">简介</label>
+        <div class="layui-input-block">
+          <input type="text" name="summary" value="{{ book.summary }}" class="layui-input" maxlength="200" placeholder="简介">
+        </div>
+      </div>
+      <div class="layui-form-item admin-cover-item">
+        <label class="layui-form-label">封面</label>
+        <div class="layui-input-block">
+          <div class="admin-asset-tile admin-asset-tile-cover is-square {% if !book.has_cover() %}is-empty{% endif %}" id="kb-cover-picker" data-asset-tile>
+            <input type="hidden" name="cover_url" id="kb-cover-url" value="{{ book.cover_url }}">
+            <button type="button" class="admin-asset-surface" data-pick title="选择封面">
+              {% if book.has_cover() %}
+              <img class="admin-asset-img admin-asset-img-cover" id="kb-cover-preview" src="{{ book.cover_url }}" alt="">
+              {% else %}
+              <img class="admin-asset-img admin-asset-img-cover" id="kb-cover-preview" alt="" hidden>
+              {% endif %}
+              <span class="admin-asset-placeholder">封面</span>
+            </button>
+            <button type="button" class="admin-asset-x" data-clear aria-label="清除" title="清除">×</button>
+          </div>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-inline" style="width:140px">
+          <select name="status">
+            <option value="draft" {% if book.status == "draft" %}selected{% endif %}>草稿</option>
+            <option value="published" {% if book.status == "published" %}selected{% endif %}>已发布</option>
+          </select>
+        </div>
+        <div class="layui-input-inline" style="width:140px">
+          <select name="visibility">
+            <option value="public" {% if book.visibility == "public" %}selected{% endif %}>公开</option>
+            <option value="private" {% if book.visibility == "private" %}selected{% endif %}>私密</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit>保存设置</button>
+          <a class="layui-btn layui-btn-primary" href="/admin/docs/{{ book.id }}">返回编写</a>
+          <a class="layui-btn layui-btn-primary" href="/admin/docs">返回列表</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="admin-card kb-settings-danger">
+    <form method="post" action="/admin/docs/books/{{ book.id }}/delete" data-confirm="确定删除该知识库及其全部内容？">
+      <button type="submit" class="layui-btn layui-btn-danger layui-btn-sm">删除知识库</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/image-crop.js?v=4"></script>
+<script src="/static/js/media-picker.js?v=5"></script>
+<script>
+layui.use(["jquery"], function () {
+  var $ = layui.$;
+  var $tile = $("#kb-cover-picker");
+  var $url = $("#kb-cover-url");
+  var $preview = $("#kb-cover-preview");
+
+  function setCover(url) {
+    $url.val(url || "");
+    if (url) {
+      $preview.attr("src", url).prop("hidden", false);
+      $tile.removeClass("is-empty");
+    } else {
+      $preview.removeAttr("src").prop("hidden", true);
+      $tile.addClass("is-empty");
+    }
+  }
+
+  $tile.on("click", "[data-pick]", function (e) {
+    e.preventDefault();
+    if (!window.OakisMediaPicker) return;
+    OakisMediaPicker.open({
+      kind: "image",
+      crop: { aspectRatio: 1, maxEdge: 800 },
+      onSelect: function (item) {
+        setCover(item.url);
+      },
+    });
+  });
+
+  $tile.on("click", "[data-clear]", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCover("");
+  });
+});
+</script>
+{% endblock %}

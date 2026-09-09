@@ -1,0 +1,166 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ book.title }} · 知识库 · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="kb-admin">
+  <aside class="kb-admin-side">
+    <div class="kb-admin-side-head">
+      <div class="kb-admin-book-bar">
+        <a class="kb-admin-back" href="/admin/docs" title="返回知识库列表">←</a>
+        <strong class="kb-admin-book-name" title="{{ book.title }}">{{ book.title }}</strong>
+        <div class="kb-admin-side-actions">
+          <span class="kb-side-action">
+            <button type="button" class="kb-icon-btn" data-kb-more title="更多" aria-label="更多">⋮</button>
+            <div class="kb-menu" hidden>
+              <a href="/admin/docs/books/{{ book.id }}/settings">知识库设置</a>
+              <button type="button" data-export="book" data-export-id="{{ book.id }}">导出</button>
+              <a href="/docs/{{ book.slug }}" target="_blank" rel="noopener">站点预览</a>
+              <a href="/admin/docs">全部知识库</a>
+            </div>
+          </span>
+          <span class="kb-side-action kb-root-add">
+            <button type="button" class="kb-icon-btn" data-kb-add title="新增" aria-label="新增">+</button>
+            <div class="kb-menu" hidden>
+              <button type="button" data-kb-create="folder" data-parent="">文件夹</button>
+              <button type="button" data-kb-create="doc" data-parent="">文档</button>
+            </div>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="kb-admin-nav" aria-label="知识库导航">
+      <a class="kb-admin-home{% if is_home() %} is-active{% endif %}" href="/admin/docs/{{ book.id }}">首页</a>
+      <div class="kb-admin-nav-label">目录</div>
+    </nav>
+
+    <div class="kb-admin-tree" data-book-id="{{ book.id }}" data-book-slug="{{ book.slug }}">
+      {% if has_nodes %}
+      {{ tree_html|safe }}
+      {% endif %}
+    </div>
+  </aside>
+
+  <section class="kb-admin-main">
+    {% match error %}
+    {% when Some with (message) %}
+    <div class="layui-bg-red admin-toast-error" role="alert" style="color:#fff;padding:10px 12px;margin-bottom:12px;border-radius:2px">{{ message }}</div>
+    {% when None %}
+    {% endmatch %}
+
+    {% if show_doc_editor() %}
+    <form class="layui-form kb-admin-form" method="post" action="{{ form_action }}" novalidate>
+      <div class="kb-editor-top">
+        <input type="text" name="title" value="{{ title }}" lay-verify="required" lay-reqtext="请填写标题" maxlength="120" class="kb-editor-title" placeholder="标题" autocomplete="off">
+        <div class="kb-editor-slug">
+          <label>Slug</label>
+          <input type="text" name="slug" value="{{ slug }}" maxlength="120" class="layui-input" autocomplete="off" placeholder="Slug">
+        </div>
+      </div>
+
+      <div class="layui-form-item admin-md-block">
+        <textarea id="content-md" name="content_md" class="admin-md-input">{{ content_md }}</textarea>
+      </div>
+
+      <div class="kb-editor-bar">
+        <div class="kb-editor-meta">
+          <select name="status">
+            <option value="draft" {% if status == "draft" %}selected{% endif %}>草稿</option>
+            <option value="published" {% if status == "published" %}selected{% endif %}>已发布</option>
+          </select>
+          <select name="visibility">
+            <option value="public" {% if visibility == "public" %}selected{% endif %}>公开</option>
+            <option value="private" {% if visibility == "private" %}selected{% endif %}>私密</option>
+          </select>
+          <label class="kb-editor-time">
+            <span>发布时间</span>
+            <input type="datetime-local" name="published_at" value="{{ published_at_local }}" class="layui-input">
+          </label>
+        </div>
+        <div class="kb-editor-actions">
+          <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-export="doc" data-export-id="{{ selected_id_value() }}">导出</button>
+          <a class="layui-btn layui-btn-sm layui-btn-primary" href="{{ preview_href() }}" target="_blank" rel="noopener">预览</a>
+          <button class="layui-btn layui-btn-sm" lay-submit type="submit">保存文档</button>
+        </div>
+      </div>
+    </form>
+
+    {% else if show_folder_panel() %}
+    <div class="kb-folder-panel">
+      <div class="kb-folder-badge">文件夹</div>
+      <form class="layui-form" method="post" action="{{ form_action }}" novalidate>
+        <input type="text" name="title" value="{{ title }}" maxlength="120" class="kb-editor-title" placeholder="名称" required autocomplete="off">
+        <button class="layui-btn layui-btn-sm" lay-submit type="submit">保存</button>
+      </form>
+    </div>
+
+    {% else if has_catalog() %}
+    <section class="kb-book-home" aria-label="知识库首页">
+      <header class="kb-book-home-head">
+        <div class="kb-book-home-identity">
+          {% if book.has_cover() %}
+          <img class="kb-book-home-icon is-cover" src="{{ book.cover_url }}" alt="" width="40" height="40">
+          {% else %}
+          <img class="kb-book-home-icon" src="/static/icons/zhishiku.svg" alt="" width="40" height="40">
+          {% endif %}
+          <div class="kb-book-home-meta">
+            <h1 class="kb-book-home-title">{{ book.title }}</h1>
+            <p class="kb-book-home-stats">
+              <span>{{ doc_count }} 文档</span>
+              <span class="kb-book-home-stats-sep" aria-hidden="true">·</span>
+              <span>{{ word_count }} 字</span>
+            </p>
+            {% if !book.summary.is_empty() %}
+            <p class="kb-book-home-summary">{{ book.summary }}</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="kb-book-home-actions">
+          <a class="layui-btn layui-btn-sm layui-btn-primary" href="/docs/{{ book.slug }}" target="_blank" rel="noopener">站点预览</a>
+          <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-export="book" data-export-id="{{ book.id }}">导出</button>
+        </div>
+      </header>
+      <div class="kb-catalog docs-catalog" aria-label="书籍目录">
+        {{ catalog_html|safe }}
+      </div>
+    </section>
+
+    {% else %}
+    <div class="kb-admin-placeholder">
+      <h2>{{ book.title }}</h2>
+      <div class="kb-admin-placeholder-actions">
+        <button type="button" class="layui-btn layui-btn-sm" data-kb-create="folder" data-parent="">新建文件夹</button>
+        <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-kb-create="doc" data-parent="">新建文档</button>
+      </div>
+    </div>
+    {% endif %}
+  </section>
+</div>
+
+<form id="kb-create-form" method="post" action="/admin/docs/{{ book.id }}/create" hidden>
+  <input type="hidden" name="parent_id" id="kb-create-parent" value="">
+  <input type="hidden" name="node_type" id="kb-create-type" value="doc">
+  <input type="hidden" name="title" id="kb-create-title" value="">
+</form>
+<form id="kb-rename-form" method="post" action="" hidden>
+  <input type="hidden" name="title" id="kb-rename-title" value="">
+</form>
+<form id="kb-delete-form" method="post" action="" hidden></form>
+{% endblock %}
+
+{% block head %}
+{% if show_doc_editor() %}
+<link rel="stylesheet" href="/static/vendor/easymde/easymde.min.css">
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if show_doc_editor() %}
+<script src="/static/vendor/easymde/easymde.min.js"></script>
+<script src="/static/js/image-crop.js?v=4"></script>
+<script src="/static/js/media-picker.js?v=5"></script>
+<script src="/static/js/easymde-editor.js?v=5"></script>
+{% endif %}
+<script src="/static/js/kb-admin.js?v=5"></script>
+{% endblock %}

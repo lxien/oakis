@@ -1,0 +1,51 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}{{ page.title }} · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-post{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+<link rel="stylesheet" href="/static/css/highlight.css?v=5">
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="post-shell">
+  <article class="post-card">
+    <header class="post-head">
+      <h1 class="post-title">{{ page.title }}</h1>
+      {% if logged_in %}
+      <div class="post-meta">
+        {% if !page.is_published() %}
+        <span class="pill pill-draft">草稿</span>
+        <span class="post-meta-sep" aria-hidden="true"></span>
+        {% endif %}
+        {% if page.is_private() %}
+        <span class="pill pill-private">仅自己可见</span>
+        <span class="post-meta-sep" aria-hidden="true"></span>
+        {% endif %}
+        <a class="post-edit" href="/admin/pages/{{ page.id }}/edit">编辑</a>
+      </div>
+      {% endif %}
+    </header>
+
+    <div class="prose">
+      {{ content_html|safe }}
+    </div>
+
+    <footer class="post-foot">
+      <div class="post-foot-actions">
+        <a href="/">← 返回首页</a>
+      </div>
+    </footer>
+  </article>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/highlight.min.js" defer></script>
+<script src="/static/js/highlight-init.js" defer></script>
+{% endblock %}

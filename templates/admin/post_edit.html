@@ -1,0 +1,205 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if is_new %}写文章{% else %}编辑文章{% endif %} · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="admin-card admin-compose">
+  {% match error %}
+  {% when Some with (message) %}
+  <div class="layui-bg-red admin-toast-error" role="alert" style="color:#fff;padding:10px 12px;margin-bottom:12px;border-radius:2px">{{ message }}</div>
+  {% when None %}
+  {% endmatch %}
+
+  <form class="layui-form" method="post" action="{{ form_action }}" enctype="multipart/form-data" novalidate>
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span style="color:#FF5722;">*</span>标题</label>
+      <div class="layui-input-block">
+        <input type="text" name="title" value="{{ title }}" lay-verify="required" lay-reqtext="请填写标题" maxlength="200" class="layui-input" autocomplete="off">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">Slug</label>
+      <div class="layui-input-block">
+        <input type="text" name="slug" value="{{ slug }}" maxlength="200" class="layui-input" autocomplete="off">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">摘要</label>
+      <div class="layui-input-block">
+        <textarea name="summary" maxlength="300" rows="2" class="layui-textarea">{{ summary }}</textarea>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">分类</label>
+      <div class="layui-input-block">
+        {% if categories.is_empty() %}
+        <span style="color:#999;line-height:38px">无</span>
+        {% else %}
+        <div class="admin-tax-checks">
+          {% for c in categories %}
+          <input type="checkbox" name="category_ids" value="{{ c.id }}" title="{{ c.name }}" lay-skin="primary" {% if c.selected %}checked{% endif %}>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">标签</label>
+      <div class="layui-input-block">
+        {% if tags.is_empty() %}
+        <span style="color:#999;line-height:38px">无</span>
+        {% else %}
+        <div class="admin-tax-checks">
+          {% for t in tags %}
+          <input type="checkbox" name="tag_ids" value="{{ t.id }}" title="{{ t.name }}" lay-skin="primary" {% if t.selected %}checked{% endif %}>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">相关文章</label>
+      <div class="layui-input-block">
+        <div
+          class="admin-related"
+          id="related-posts"
+          data-exclude="{{ content_id }}"
+          data-max="{{ related_max }}"
+        >
+          <ul class="admin-related-selected" data-selected>
+            {% for r in related %}
+            <li class="admin-related-chip" data-id="{{ r.id }}">
+              <span class="admin-related-chip-title">{{ r.title }}</span>
+              <button type="button" class="admin-related-chip-x" data-remove aria-label="移除">×</button>
+              <input type="hidden" name="related_ids" value="{{ r.id }}">
+            </li>
+            {% endfor %}
+          </ul>
+          <div class="admin-related-search">
+            <input type="search" class="layui-input" data-q placeholder="搜索标题或 slug" autocomplete="off">
+          </div>
+          <div class="admin-related-results" data-results hidden></div>
+          <div class="admin-related-pager" data-pager hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layui-form-item admin-cover-item">
+      <label class="layui-form-label">封面</label>
+      <div class="layui-input-block">
+        <div class="admin-asset-tile admin-asset-tile-cover {% if cover_url.is_empty() %}is-empty{% endif %}" id="cover-picker" data-asset-tile>
+          <input type="hidden" name="cover_url" id="cover-url" value="{{ cover_url }}">
+          <button type="button" class="admin-asset-surface" data-pick title="选择封面">
+            {% if !cover_url.is_empty() %}
+            <img class="admin-asset-img admin-asset-img-cover" id="cover-preview" src="{{ cover_url }}" alt="">
+            {% else %}
+            <img class="admin-asset-img admin-asset-img-cover" id="cover-preview" alt="" hidden>
+            {% endif %}
+            <span class="admin-asset-placeholder">封面</span>
+          </button>
+          <button type="button" class="admin-asset-x" data-clear aria-label="清除" title="清除">×</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="layui-form-item admin-md-block">
+      <textarea id="content-md" name="content_md" class="admin-md-input">{{ content_md }}</textarea>
+    </div>
+
+    <div class="layui-form-item admin-edit-meta">
+      <div class="layui-inline">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-inline" style="width:120px">
+          <select name="status">
+            <option value="draft" {% if status == "draft" %}selected{% endif %}>草稿</option>
+            <option value="published" {% if status == "published" %}selected{% endif %}>发布</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline">
+        <label class="layui-form-label">可见性</label>
+        <div class="layui-input-inline" style="width:120px">
+          <select name="visibility">
+            <option value="public" {% if visibility == "public" %}selected{% endif %}>公开</option>
+            <option value="private" {% if visibility == "private" %}selected{% endif %}>私密</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-inline" style="width:200px">
+          <input type="datetime-local" name="published_at" value="{{ published_at_local }}" class="layui-input">
+        </div>
+      </div>
+    </div>
+
+    <div class="layui-form-item admin-edit-actions">
+      {% if !is_new %}
+      <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-export="post" data-export-id="{{ content_id }}">导出</button>
+      {% endif %}
+      <a class="layui-btn layui-btn-sm layui-btn-primary" href="/admin/posts">返回</a>
+      <button class="layui-btn layui-btn-sm" lay-submit type="submit">保存</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/vendor/easymde/easymde.min.css">
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/easymde/easymde.min.js"></script>
+<script src="/static/js/image-crop.js?v=4"></script>
+<script src="/static/js/media-picker.js?v=5"></script>
+<script src="/static/js/related-posts.js?v=1"></script>
+<script src="/static/js/easymde-editor.js?v=5"></script>
+<script>
+layui.use(["jquery"], function () {
+  var $ = layui.$;
+  var $tile = $("#cover-picker");
+  var $url = $("#cover-url");
+  var $preview = $("#cover-preview");
+
+  if (window.OakisRelatedPosts) {
+    OakisRelatedPosts.mount(document.getElementById("related-posts"));
+  }
+
+  function setCover(url, cleared) {
+    $url.val(url || "");
+    $tile.find('input[name="remove_cover"]').remove();
+    if (url) {
+      $preview.attr("src", url).prop("hidden", false);
+      $tile.removeClass("is-empty");
+    } else {
+      $preview.removeAttr("src").prop("hidden", true);
+      $tile.addClass("is-empty");
+      if (cleared) {
+        $tile.append('<input type="hidden" name="remove_cover" value="1">');
+      }
+    }
+  }
+
+  $tile.on("click", "[data-pick]", function (e) {
+    e.preventDefault();
+    if (!window.OakisMediaPicker) return;
+    OakisMediaPicker.open({
+      kind: "image",
+      crop: { aspectRatio: 16 / 9, maxEdge: 1200 },
+      onSelect: function (item) {
+        setCover(item.url, false);
+      },
+    });
+  });
+
+  $tile.on("click", "[data-clear]", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCover("", true);
+  });
+});
+</script>
+{% endblock %}

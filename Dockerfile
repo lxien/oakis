@@ -1,0 +1,16 @@
+FROM scratch
+
+ARG TARGETARCH
+
+COPY binaries/${TARGETARCH}/oakis /oakis
+
+ENV OAKIS_HOST=0.0.0.0 \
+    OAKIS_PORT=8080 \
+    OAKIS_DATA_DIR=/data
+
+WORKDIR /
+
+EXPOSE 8080
+VOLUME ["/data"]
+
+ENTRYPOINT ["/oakis"]

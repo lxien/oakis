@@ -1,0 +1,18 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}{{ title }} · oakis{% endblock %}
+{% block body_class %}page-error{% endblock %}
+
+{% block body %}
+<main class="error-shell">
+  <section class="error-panel reveal">
+    <p class="error-code">{{ status }}</p>
+    <h1 class="error-title">{{ title }}</h1>
+    <p class="error-desc">{{ message }}</p>
+    <div class="error-actions">
+      <a class="btn btn-primary" href="{{ home_href }}">返回首页</a>
+      <button class="btn btn-ghost" type="button" onclick="history.length > 1 ? history.back() : location.href='/'">返回上页</button>
+    </div>
+  </section>
+</main>
+{% endblock %}

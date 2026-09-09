@@ -1,0 +1,53 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}知识库 · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-docs-home{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="docs-library">
+  <header class="docs-library-head">
+    <div>
+      <h1 class="docs-library-title">知识库</h1>
+    </div>
+    {% if can_manage %}
+    <a class="docs-library-manage" href="/admin/docs">管理</a>
+    {% endif %}
+  </header>
+
+  {% if is_empty() %}
+  <div class="docs-library-empty">
+    <p>{% if can_manage %}<a href="/admin/docs">创建知识库</a>{% else %}暂无内容{% endif %}</p>
+  </div>
+  {% else %}
+  <div class="docs-library-grid">
+    {% for book in books %}
+    <a class="docs-book-card" href="/docs/{{ book.slug }}">
+      <span class="docs-book-cover" aria-hidden="true">
+        {% if book.has_cover() %}
+        <img src="{{ book.cover_url }}" alt="">
+        {% else %}
+        <img class="docs-book-fallback" src="/static/icons/zhishiku.svg" alt="">
+        {% endif %}
+      </span>
+      <span class="docs-book-body">
+        <span class="docs-book-name">
+          <span class="docs-book-name-text">{{ book.title }}</span>
+          {% if book.is_private() %}<span class="docs-book-lock" title="私密" aria-label="私密"></span>{% endif %}
+          {% if !book.is_published() %}<span class="docs-book-draft">草稿</span>{% endif %}
+        </span>
+        <span class="docs-book-summary{% if book.summary.is_empty() %} is-empty{% endif %}">{% if !book.summary.is_empty() %}{{ book.summary }}{% endif %}</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}

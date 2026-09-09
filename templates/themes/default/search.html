@@ -1,0 +1,53 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}{% if !query.is_empty() %}搜索：{{ query }}{% else %}搜索{% endif %} · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-search{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="home-shell">
+  <section class="list-page">
+    <header class="list-page-head">
+      <h1 class="list-page-title">{% if query.is_empty() %}搜索{% else %}{{ query }}{% endif %}</h1>
+    </header>
+
+    {% if query.is_empty() %}
+    <div class="empty-state">
+      <h3>在顶部输入关键词</h3>
+    </div>
+    {% else if hits.is_empty() %}
+    <div class="empty-state">
+      <h3>没有结果</h3>
+    </div>
+    {% else %}
+    <div class="search-hits list-page-feed">
+      <ul class="search-hit-list">
+        {% for hit in hits %}
+        <li class="search-hit">
+          <a class="search-hit-link" href="{{ hit.href }}">
+            <span class="search-hit-title">{{ hit.title }}</span>
+            {% if hit.has_excerpt() %}
+            <span class="search-hit-excerpt">{{ hit.display_excerpt() }}</span>
+            {% endif %}
+            <span class="search-hit-meta">
+              <span class="search-hit-kind">{{ hit.kind_label() }}</span>
+              <span class="search-hit-dot" aria-hidden="true"></span>
+              <time datetime="{{ hit.sort_at }}">{{ hit.short_date() }}</time>
+            </span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% include "themes/default/components/pagination.html" %}
+    </div>
+    {% endif %}
+  </section>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}

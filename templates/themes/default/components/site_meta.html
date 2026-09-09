@@ -1,0 +1,10 @@
+{% if !settings.favicon_url.is_empty() %}
+<link rel="icon" href="{{ settings.favicon_url }}">
+{% endif %}
+<link rel="alternate" type="application/rss+xml" title="{{ settings.site_title }}" href="/feed.xml">
+{% if !settings.seo_description.is_empty() %}
+<meta name="description" content="{{ settings.seo_description }}">
+{% endif %}
+{% if !settings.seo_keywords.is_empty() %}
+<meta name="keywords" content="{{ settings.seo_keywords }}">
+{% endif %}

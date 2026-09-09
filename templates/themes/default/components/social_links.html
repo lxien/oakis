@@ -1,0 +1,12 @@
+{% if settings.has_social_links() %}
+<nav class="social-links" aria-label="社交链接">
+  {% for link in settings.social_links %}
+  <a class="social-link" href="{{ link.url }}" {% if !link.is_email() %}target="_blank" rel="noopener noreferrer"{% endif %} title="{{ link.label }}">
+    <span class="social-icon" aria-hidden="true">
+      <img src="{{ link.icon_src() }}" alt="" width="20" height="20" loading="lazy">
+    </span>
+    <span class="social-label-text">{{ link.label }}</span>
+  </a>
+  {% endfor %}
+</nav>
+{% endif %}

@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+
+{% block title %}编辑{{ kind_label }} · {{ settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+  {% match error %}
+  {% when Some with (message) %}
+  <div class="layui-bg-red admin-toast-error" role="alert" style="color:#fff;padding:10px 12px;margin-bottom:12px;border-radius:2px">{{ message }}</div>
+  {% when None %}
+  {% endmatch %}
+
+  <form class="layui-form" method="post" action="/admin/taxonomies/{{ id }}/edit" novalidate>
+    <input type="hidden" name="kind" value="{{ kind }}">
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span style="color:#FF5722;">*</span>名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="name" value="{{ name }}" lay-verify="required" lay-reqtext="请填写名称" maxlength="40" class="layui-input" autocomplete="off">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">Slug</label>
+      <div class="layui-input-block">
+        <input type="text" name="slug" value="{{ slug }}" maxlength="60" class="layui-input" autocomplete="off">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block admin-edit-actions">
+        <a class="layui-btn layui-btn-sm layui-btn-primary" href="/admin/taxonomies?kind={{ kind }}">返回</a>
+        <button class="layui-btn layui-btn-sm" lay-submit type="submit">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

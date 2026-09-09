@@ -1,0 +1,15 @@
+{% if !tags.is_empty() %}
+<section class="aside-card">
+  <h2 class="aside-title">标签</h2>
+  <ul class="cat-list">
+    {% for tag in tags %}
+    <li>
+      <a href="/tags/{{ tag.slug }}">{{ tag.name }}<span class="cat-count">{{ tag.post_count }}</span></a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if tags_more %}
+  <p class="aside-more"><a href="/tags">全部</a></p>
+  {% endif %}
+</section>
+{% endif %}

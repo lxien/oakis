@@ -1,0 +1,37 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}{{ term.name }} · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-taxonomy{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="home-shell">
+  <section class="list-page">
+    <header class="list-page-head">
+      <h1 class="list-page-title">{{ term.name }}</h1>
+    </header>
+
+    {% if posts.is_empty() %}
+    <div class="empty-state">
+      <h3>暂无文章</h3>
+    </div>
+    {% else %}
+    <div class="feed-panel list-page-feed">
+      <ul class="feed-list">
+        {% for post in posts %}
+        {% include "themes/default/components/feed_entry.html" %}
+        {% endfor %}
+      </ul>
+      {% include "themes/default/components/pagination.html" %}
+    </div>
+    {% endif %}
+  </section>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}

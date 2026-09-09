@@ -1,0 +1,36 @@
+{% extends "themes/default/base.html" %}
+
+{% block title %}标签 · {{ settings.site_title }}{% endblock %}
+{% block body_class %}page-tags{% endblock %}
+
+{% block head %}
+{% include "themes/default/components/site_meta.html" %}
+{% endblock %}
+
+{% block body %}
+{% include "themes/default/components/public_header.html" %}
+
+<main class="home-shell">
+  <section class="list-page">
+    <header class="list-page-head">
+      <h1 class="list-page-title">标签</h1>
+    </header>
+
+    {% if tags.is_empty() %}
+    <div class="empty-state">
+      <h3>暂无标签</h3>
+    </div>
+    {% else %}
+    <ul class="tax-index-list">
+      {% for tag in tags %}
+      <li>
+        <a href="/tags/{{ tag.slug }}">{{ tag.name }}<span class="cat-count">{{ tag.post_count }}</span></a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+</main>
+
+{% include "themes/default/components/site_footer.html" %}
+{% endblock %}

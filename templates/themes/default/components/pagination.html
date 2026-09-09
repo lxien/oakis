@@ -1,0 +1,5 @@
+{% if pagination.has_next() %}
+<nav class="pagination pagination-more" aria-label="分页">
+  <a class="pagination-more-btn" href="{{ pagination.next_url() }}">查看更多</a>
+</nav>
+{% endif %}
