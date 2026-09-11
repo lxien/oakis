@@ -3347,12 +3347,45 @@ a.tax-chip:hover {
 }
 
 .page-docs .docs-side-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
     margin: 0.85rem 0.55rem 0.35rem;
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink-soft);
+}
+
+.page-docs .docs-side-section > span {
     opacity: 0.85;
+}
+
+.page-docs .docs-side-section .kb-tree-toggle {
+    flex-shrink: 0;
+    appearance: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    background: transparent center / 0.95rem 0.95rem no-repeat
+        url("/static/icons/kb-tree-expand.svg");
+    opacity: 0.75;
+}
+
+.page-docs .docs-side-section .kb-tree-toggle:hover,
+.page-docs .docs-side-section .kb-tree-toggle:focus-visible {
+    opacity: 1;
+    background-color: var(--mist);
+    outline: none;
+}
+
+.page-docs .docs-side-section .kb-tree-toggle.is-expanded {
+    background-image: url("/static/icons/kb-tree-collapse.svg");
 }
 
 .page-docs .docs-tree-empty {
@@ -3529,6 +3562,7 @@ a.tax-chip:hover {
     display: flex;
     align-items: flex-start;
     gap: 0.9rem;
+    flex: 1;
     min-width: 0;
 }
 
@@ -3547,7 +3581,17 @@ a.tax-chip:hover {
 }
 
 .page-docs .docs-home-meta {
+    flex: 1;
     min-width: 0;
+}
+
+.page-docs .docs-home-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0 0 0.4rem;
 }
 
 .page-docs .docs-home-title {
@@ -3557,6 +3601,40 @@ a.tax-chip:hover {
     line-height: 1.25;
     margin: 0 0 0.4rem;
     color: var(--ink);
+}
+
+.page-docs .docs-home-title-row .docs-home-title {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+}
+
+.page-docs .docs-home-title-row .kb-catalog-expand {
+    flex-shrink: 0;
+    appearance: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    width: 1em;
+    height: 1em;
+    font-size: clamp(1.55rem, 2.4vw, 1.95rem);
+    line-height: 1;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    background: transparent center / contain no-repeat
+        url("/static/icons/kb-tree-expand.svg");
+    opacity: 0.55;
+}
+
+.page-docs .docs-home-title-row .kb-catalog-expand:hover,
+.page-docs .docs-home-title-row .kb-catalog-expand:focus-visible {
+    opacity: 0.9;
+    background-color: var(--mist);
+    outline: none;
+}
+
+.page-docs .docs-home-title-row .kb-catalog-expand.is-expanded {
+    background-image: url("/static/icons/kb-tree-collapse.svg");
 }
 
 .page-docs .docs-home-stats {

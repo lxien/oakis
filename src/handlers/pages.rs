@@ -117,7 +117,7 @@ pub async fn page_new_page(
         String::new(),
         String::new(),
         String::new(),
-        "draft".into(),
+        "published".into(),
         "public".into(),
         None,
     )?))

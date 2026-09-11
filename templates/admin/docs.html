@@ -32,7 +32,12 @@
 
     <nav class="kb-admin-nav" aria-label="知识库导航">
       <a class="kb-admin-home{% if is_home() %} is-active{% endif %}" href="/admin/docs/{{ book.id }}">首页</a>
-      <div class="kb-admin-nav-label">目录</div>
+      <div class="kb-admin-nav-label">
+        <span>目录</span>
+        {% if has_nodes %}
+        <button type="button" class="kb-tree-toggle" data-kb-tree-toggle aria-pressed="false" title="全部展开" aria-label="全部展开"></button>
+        {% endif %}
+      </div>
     </nav>
 
     <div class="kb-admin-tree" data-book-id="{{ book.id }}" data-book-slug="{{ book.slug }}">
@@ -117,8 +122,9 @@
           </div>
         </div>
         <div class="kb-book-home-actions">
-          <a class="layui-btn layui-btn-sm layui-btn-primary" href="/docs/{{ book.slug }}" target="_blank" rel="noopener">站点预览</a>
-          <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-export="book" data-export-id="{{ book.id }}">导出</button>
+          <a class="kb-book-home-text-btn" href="/docs/{{ book.slug }}" target="_blank" rel="noopener">站点预览</a>
+          <button type="button" class="kb-book-home-text-btn" data-export="book" data-export-id="{{ book.id }}">导出</button>
+          <button type="button" class="kb-catalog-expand" data-kb-catalog-toggle aria-pressed="false" title="全部展开" aria-label="全部展开"></button>
         </div>
       </header>
       <div class="kb-catalog docs-catalog" aria-label="书籍目录">
@@ -162,5 +168,6 @@
 <script src="/static/js/media-picker.js?v=5"></script>
 <script src="/static/js/easymde-editor.js?v=5"></script>
 {% endif %}
+<script src="/static/js/kb-tree.js?v=2"></script>
 <script src="/static/js/kb-admin.js?v=5"></script>
 {% endblock %}

@@ -169,7 +169,7 @@ fn tree_html(
 
             if as_branch {
                 out.push_str("<details class=\"kb-branch\"");
-                if admin || active || contains_id(&n.children, active_id) || depth < 1 {
+                if active || contains_id(&n.children, active_id) {
                     out.push_str(" open");
                 }
                 out.push_str(">");
@@ -313,7 +313,7 @@ fn catalog_html(nodes: &[KbTreeNode], book_slug: &str, admin_book_id: Option<i64
         out.push_str("<ul class=\"docs-catalog-list\">");
         for n in nodes {
             let branch = n.has_children();
-            let open = branch && depth < 1;
+            let open = false;
             out.push_str("<li class=\"docs-catalog-item");
             if n.is_folder() {
                 out.push_str(" is-folder");

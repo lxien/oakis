@@ -237,7 +237,7 @@ pub async fn admin_book_page(
             String::new(),
             String::new(),
             String::new(),
-            "draft".into(),
+            "published".into(),
             "public".into(),
             timefmt::now_local_input(),
             String::new(),
@@ -324,11 +324,7 @@ pub async fn admin_node_create(
     }
 
     let (status, visibility, content_md, content_html, published_at) =
-        if node_type == KbNode::TYPE_FOLDER {
-            ("published", "public", "", "", None)
-        } else {
-            ("draft", "public", "", "", None)
-        };
+        ("published", "public", "", "", None);
 
     let id = create_kb_node(
         &state.pool,

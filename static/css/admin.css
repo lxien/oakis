@@ -2110,11 +2110,41 @@ body.admin-login {
 }
 
 .kb-admin-nav-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
     margin: 10px 10px 2px;
     font-size: 11px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: #999;
+}
+
+.kb-admin-nav-label .kb-tree-toggle {
+    flex-shrink: 0;
+    appearance: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: transparent center / 13px 13px no-repeat
+        url("/static/icons/kb-tree-expand.svg");
+    opacity: 0.7;
+}
+
+.kb-admin-nav-label .kb-tree-toggle:hover,
+.kb-admin-nav-label .kb-tree-toggle:focus-visible {
+    opacity: 1;
+    background-color: #eee;
+    outline: none;
+}
+
+.kb-admin-nav-label .kb-tree-toggle.is-expanded {
+    background-image: url("/static/icons/kb-tree-collapse.svg");
 }
 
 .kb-book-home {
@@ -2135,8 +2165,31 @@ body.admin-login {
 .kb-book-home-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    align-items: center;
+    gap: 4px;
     flex-shrink: 0;
+}
+
+.kb-book-home-text-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 0 8px;
+    margin: 0;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 2px;
+    font-size: 13px;
+    color: #666;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.kb-book-home-text-btn:hover,
+.kb-book-home-text-btn:focus-visible {
+    color: #333;
+    background-color: #f0f0f0;
+    outline: none;
 }
 
 .kb-book-home-identity {
@@ -2166,6 +2219,32 @@ body.admin-login {
     font-weight: 600;
     color: #222;
     line-height: 1.3;
+}
+
+.kb-book-home-actions .kb-catalog-expand {
+    flex-shrink: 0;
+    appearance: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 2px;
+    cursor: pointer;
+    background: transparent center / 16px 16px no-repeat
+        url("/static/icons/kb-tree-expand.svg");
+    opacity: 0.55;
+}
+
+.kb-book-home-actions .kb-catalog-expand:hover,
+.kb-book-home-actions .kb-catalog-expand:focus-visible {
+    opacity: 0.9;
+    background-color: #f0f0f0;
+    outline: none;
+}
+
+.kb-book-home-actions .kb-catalog-expand.is-expanded {
+    background-image: url("/static/icons/kb-tree-collapse.svg");
 }
 
 .kb-book-home-stats {

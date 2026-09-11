@@ -19,7 +19,12 @@
     </div>
     <nav class="docs-side-nav" aria-label="知识库导航">
       <a class="docs-side-home{% if is_home %} is-active{% endif %}" href="/docs/{{ book.slug }}">首页</a>
-      <div class="docs-side-section">目录</div>
+      <div class="docs-side-section">
+        <span>目录</span>
+        {% if !tree_html.is_empty() %}
+        <button type="button" class="kb-tree-toggle" data-kb-tree-toggle aria-pressed="false" title="全部展开" aria-label="全部展开"></button>
+        {% endif %}
+      </div>
     </nav>
     <nav class="docs-tree">
       {% if !tree_html.is_empty() %}
@@ -39,7 +44,14 @@
           <img class="docs-home-icon" src="/static/icons/zhishiku.svg" alt="" width="40" height="40">
           {% endif %}
           <div class="docs-home-meta">
+            {% if has_catalog() %}
+            <div class="docs-home-title-row">
+              <h1 class="docs-home-title">{{ book.title }}</h1>
+              <button type="button" class="kb-catalog-expand" data-kb-catalog-toggle aria-pressed="false" title="全部展开" aria-label="全部展开"></button>
+            </div>
+            {% else %}
             <h1 class="docs-home-title">{{ book.title }}</h1>
+            {% endif %}
             <p class="docs-home-stats">
               <span>{{ doc_count }} 文档</span>
               <span class="docs-home-stats-sep" aria-hidden="true">·</span>
@@ -119,6 +131,7 @@
 {% block scripts %}
 <script src="/static/js/highlight.min.js" defer></script>
 <script src="/static/js/highlight-init.js" defer></script>
+<script src="/static/js/kb-tree.js?v=2" defer></script>
 {% if is_home %}
 <script>
 document.querySelector(".docs-catalog")?.addEventListener("click", function (e) {
