@@ -227,14 +227,7 @@ fn tree_html(
 
     let mut out = String::new();
     walk(
-        &mut out,
-        nodes,
-        active_id,
-        book_id,
-        book_slug,
-        admin,
-        None,
-        0,
+        &mut out, nodes, active_id, book_id, book_slug, admin, None, 0,
     );
     out
 }
