@@ -9,7 +9,7 @@ pub mod public;
 pub use admin::{
     admin_book_create, admin_book_delete, admin_book_page, admin_book_save,
     admin_book_settings_page, admin_docs_list, admin_node_create, admin_node_delete,
-    admin_node_rename, admin_node_save,
+    admin_node_move, admin_node_rename, admin_node_save,
 };
 pub use public::{docs_book, docs_home, docs_page};
 
@@ -62,6 +62,14 @@ pub struct RenameNodeForm {
     pub title: String,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct MoveNodeForm {
+    #[serde(default)]
+    pub parent_id: String,
+    #[serde(default)]
+    pub before_id: String,
+}
+
 fn status_value(status: &str) -> &'static str {
     if status == "published" {
         "published"
@@ -107,15 +115,6 @@ fn html_escape(out: &mut String, s: &str) {
     }
 }
 
-fn contains_id(nodes: &[KbTreeNode], id: Option<i64>) -> bool {
-    let Some(id) = id else {
-        return false;
-    };
-    nodes
-        .iter()
-        .any(|n| n.id == id || contains_id(&n.children, Some(id)))
-}
-
 fn tree_html(
     nodes: &[KbTreeNode],
     active_id: Option<i64>,
@@ -130,6 +129,7 @@ fn tree_html(
         book_id: i64,
         book_slug: &str,
         admin: bool,
+        parent_id: Option<i64>,
         depth: usize,
     ) {
         if nodes.is_empty() {
@@ -157,7 +157,15 @@ fn tree_html(
             out.push_str(&n.id.to_string());
             out.push_str("\" data-type=\"");
             out.push_str(if n.is_folder() { "folder" } else { "doc" });
-            out.push_str("\">");
+            out.push_str("\" data-parent-id=\"");
+            if let Some(pid) = parent_id {
+                out.push_str(&pid.to_string());
+            }
+            out.push_str("\"");
+            if admin {
+                out.push_str(" draggable=\"true\"");
+            }
+            out.push_str(">");
 
             let href = if admin {
                 format!("/admin/docs/{book_id}?id={}", n.id)
@@ -168,11 +176,7 @@ fn tree_html(
             };
 
             if as_branch {
-                out.push_str("<details class=\"kb-branch\"");
-                if active || contains_id(&n.children, active_id) {
-                    out.push_str(" open");
-                }
-                out.push_str(">");
+                out.push_str("<details class=\"kb-branch\">");
                 out.push_str("<summary class=\"kb-row\">");
                 out.push_str("<span class=\"kb-chevron\" aria-hidden=\"true\"></span>");
                 if href.is_empty() {
@@ -197,6 +201,7 @@ fn tree_html(
                     book_id,
                     book_slug,
                     admin,
+                    Some(n.id),
                     depth + 1,
                 );
                 out.push_str("</details>");
@@ -221,7 +226,16 @@ fn tree_html(
     }
 
     let mut out = String::new();
-    walk(&mut out, nodes, active_id, book_id, book_slug, admin, 0);
+    walk(
+        &mut out,
+        nodes,
+        active_id,
+        book_id,
+        book_slug,
+        admin,
+        None,
+        0,
+    );
     out
 }
 

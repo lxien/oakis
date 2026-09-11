@@ -301,6 +301,164 @@ pub async fn delete_kb_node(pool: &SqlitePool, id: i64) -> AppResult<()> {
     Ok(())
 }
 
+pub async fn move_kb_node(
+    pool: &SqlitePool,
+    node_id: i64,
+    new_parent_id: Option<i64>,
+    before_id: Option<i64>,
+    now: &str,
+) -> AppResult<()> {
+    let mut tx = pool.begin().await?;
+
+    let sql = format!("SELECT {KB_NODE_COLS} FROM kb_nodes WHERE id = ?");
+    let Some(node) = query_as::<_, KbNode>(&sql)
+        .bind(node_id)
+        .fetch_optional(&mut *tx)
+        .await?
+    else {
+        return Err(crate::infra::error::AppError::not_found("页面不存在"));
+    };
+
+    if new_parent_id == Some(node_id) {
+        return Err(crate::infra::error::AppError::bad_request("不能移动到自身"));
+    }
+
+    if let Some(pid) = new_parent_id {
+        let Some(parent) = query_as::<_, KbNode>(&sql)
+            .bind(pid)
+            .fetch_optional(&mut *tx)
+            .await?
+        else {
+            return Err(crate::infra::error::AppError::bad_request("父节点不存在"));
+        };
+        if parent.book_id != node.book_id {
+            return Err(crate::infra::error::AppError::bad_request(
+                "父节点不属于该知识库",
+            ));
+        }
+
+        let mut cursor = Some(pid);
+        while let Some(cid) = cursor {
+            if cid == node_id {
+                return Err(crate::infra::error::AppError::bad_request(
+                    "不能移动到自己的子目录中",
+                ));
+            }
+            cursor = query_scalar::<_, Option<i64>>("SELECT parent_id FROM kb_nodes WHERE id = ?")
+                .bind(cid)
+                .fetch_optional(&mut *tx)
+                .await?
+                .flatten();
+        }
+    }
+
+    if let Some(bid) = before_id {
+        if bid == node_id {
+            return Err(crate::infra::error::AppError::bad_request("无效的插入位置"));
+        }
+        let Some(before) = query_as::<_, KbNode>(&sql)
+            .bind(bid)
+            .fetch_optional(&mut *tx)
+            .await?
+        else {
+            return Err(crate::infra::error::AppError::bad_request("插入位置不存在"));
+        };
+        if before.book_id != node.book_id {
+            return Err(crate::infra::error::AppError::bad_request(
+                "插入位置不属于该知识库",
+            ));
+        }
+        if before.parent_id != new_parent_id {
+            return Err(crate::infra::error::AppError::bad_request(
+                "插入位置与目标父节点不一致",
+            ));
+        }
+    }
+
+    let old_parent_id = node.parent_id;
+    let book_id = node.book_id;
+
+    if old_parent_id == new_parent_id {
+        let siblings = list_sibling_ids(&mut tx, book_id, new_parent_id).await?;
+        let cur = siblings.iter().position(|id| *id == node_id);
+        let target = match before_id {
+            Some(bid) => siblings.iter().position(|id| *id == bid),
+            None => Some(siblings.len()),
+        };
+        if let (Some(c), Some(t)) = (cur, target) {
+            let desired = if t > c { t - 1 } else { t };
+            if c == desired {
+                tx.rollback().await?;
+                return Ok(());
+            }
+        }
+    }
+
+    query("UPDATE kb_nodes SET parent_id = ?, updated_at = ? WHERE id = ?")
+        .bind(new_parent_id)
+        .bind(now)
+        .bind(node_id)
+        .execute(&mut *tx)
+        .await?;
+
+    let mut target_ids = list_sibling_ids(&mut tx, book_id, new_parent_id).await?;
+    target_ids.retain(|id| *id != node_id);
+    let insert_at = match before_id {
+        Some(bid) => target_ids.iter().position(|id| *id == bid).unwrap_or(target_ids.len()),
+        None => target_ids.len(),
+    };
+    target_ids.insert(insert_at, node_id);
+    write_sort_orders(&mut tx, &target_ids).await?;
+
+    if old_parent_id != new_parent_id {
+        let old_ids = list_sibling_ids(&mut tx, book_id, old_parent_id).await?;
+        write_sort_orders(&mut tx, &old_ids).await?;
+    }
+
+    tx.commit().await?;
+    Ok(())
+}
+
+async fn list_sibling_ids(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    book_id: i64,
+    parent_id: Option<i64>,
+) -> AppResult<Vec<i64>> {
+    Ok(match parent_id {
+        Some(pid) => {
+            query_scalar(
+                "SELECT id FROM kb_nodes WHERE book_id = ? AND parent_id = ? ORDER BY sort_order ASC, id ASC",
+            )
+            .bind(book_id)
+            .bind(pid)
+            .fetch_all(&mut **tx)
+            .await?
+        }
+        None => {
+            query_scalar(
+                "SELECT id FROM kb_nodes WHERE book_id = ? AND parent_id IS NULL ORDER BY sort_order ASC, id ASC",
+            )
+            .bind(book_id)
+            .fetch_all(&mut **tx)
+            .await?
+        }
+    })
+}
+
+async fn write_sort_orders(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    ids: &[i64],
+) -> AppResult<()> {
+    for (i, id) in ids.iter().enumerate() {
+        query("UPDATE kb_nodes SET sort_order = ? WHERE id = ?")
+            .bind(i as i64)
+            .bind(id)
+            .execute(&mut **tx)
+            .await?;
+    }
+    Ok(())
+}
+
 pub fn build_kb_tree(nodes: &[KbNode]) -> Vec<KbTreeNode> {
     fn to_tree(n: &KbNode, all: &[KbNode]) -> KbTreeNode {
         let children = all

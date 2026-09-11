@@ -3474,6 +3474,10 @@ a.tax-chip:hover {
     transition: transform .15s ease;
 }
 
+.page-docs .kb-branch > summary > .kb-chevron:not(.kb-chevron-leaf) {
+    cursor: pointer;
+}
+
 .page-docs .kb-branch > summary > .kb-chevron:not(.kb-chevron-leaf):hover {
     background: var(--line);
     color: var(--ink);

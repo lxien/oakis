@@ -141,6 +141,7 @@ pub fn app(
             "/admin/docs/nodes/{id}/delete",
             post(docs::admin_node_delete),
         )
+        .route("/admin/docs/nodes/{id}/move", post(docs::admin_node_move))
         .route("/admin/docs/{book_id}", get(docs::admin_book_page))
         .route(
             "/admin/docs/{book_id}/create",

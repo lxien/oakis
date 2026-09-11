@@ -16,8 +16,8 @@ pub use kb::{
     build_kb_tree, build_public_kb_tree, create_kb_book, create_kb_node, delete_kb_book,
     delete_kb_node, find_kb_book_by_id, find_kb_book_by_slug, find_kb_node_by_book_slug,
     find_kb_node_by_id, kb_book_slug_taken, kb_breadcrumbs, kb_node_slug_taken, kb_page_neighbors,
-    kb_tree_stats, list_kb_books, list_kb_nodes_by_book, list_public_kb_books, next_kb_book_sort,
-    next_kb_node_sort, rename_kb_node, update_kb_book, update_kb_node,
+    kb_tree_stats, list_kb_books, list_kb_nodes_by_book, list_public_kb_books, move_kb_node,
+    next_kb_book_sort, next_kb_node_sort, rename_kb_node, update_kb_book, update_kb_node,
 };
 #[allow(unused_imports)]
 pub use media::{

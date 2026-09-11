@@ -34,4 +34,17 @@
             });
         });
     });
+
+    document.querySelectorAll(".kb-admin-tree, .docs-tree").forEach(function (tree) {
+        tree.addEventListener("click", function (e) {
+            var summary = e.target.closest("details.kb-branch > summary");
+            if (!summary || !tree.contains(summary)) return;
+            if (e.target.closest("a, button, .kb-row-actions, .kb-action-wrap, .kb-menu")) {
+                return;
+            }
+            if (!e.target.closest(".kb-chevron:not(.kb-chevron-leaf)")) {
+                e.preventDefault();
+            }
+        });
+    });
 })();

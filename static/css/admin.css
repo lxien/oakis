@@ -1602,6 +1602,33 @@ body.admin-login {
     --kb-nest: calc(var(--kb-depth, 0) * 12px);
 }
 
+.kb-admin-tree .kb-tree-item[draggable="true"] {
+    cursor: grab;
+}
+
+.kb-admin-tree .kb-tree-item.is-dragging {
+    opacity: 0.45;
+    cursor: grabbing;
+}
+
+.kb-admin-tree .kb-tree-item.is-drop-into > .kb-branch > summary.kb-row::before,
+.kb-admin-tree .kb-tree-item.is-drop-into > .kb-row::before {
+    background: #e8f3ff;
+}
+
+.kb-admin-tree {
+    position: relative;
+}
+
+.kb-drop-line {
+    position: absolute;
+    height: 2px;
+    background: #1e9fff;
+    border-radius: 1px;
+    pointer-events: none;
+    z-index: 30;
+}
+
 .kb-row {
     display: flex;
     align-items: center;
@@ -1661,6 +1688,10 @@ body.admin-login {
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / 12px 12px no-repeat;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / 12px 12px no-repeat;
     transition: transform .15s ease;
+}
+
+.kb-branch > summary > .kb-chevron:not(.kb-chevron-leaf) {
+    cursor: pointer;
 }
 
 .kb-branch > summary > .kb-chevron:not(.kb-chevron-leaf):hover {

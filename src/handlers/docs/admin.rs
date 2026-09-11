@@ -14,13 +14,14 @@ use crate::models::KbNode;
 use crate::store::{
     build_kb_tree, create_kb_book, create_kb_node, delete_kb_book, delete_kb_node,
     find_kb_book_by_id, find_kb_node_by_id, kb_book_slug_taken, kb_node_slug_taken, kb_tree_stats,
-    list_kb_books, list_kb_nodes_by_book, rename_kb_node, update_kb_book, update_kb_node,
+    list_kb_books, list_kb_nodes_by_book, move_kb_node, rename_kb_node, update_kb_book,
+    update_kb_node,
 };
 use crate::views::{AdminDocsBookTemplate, AdminDocsListTemplate, AdminDocsSettingsTemplate};
 use crate::web::authz::{cloak_auth, require_user};
 
 use super::{
-    BookForm, CreateNodeForm, NodeQuery, RenameNodeForm, SaveNodeForm, catalog_html,
+    BookForm, CreateNodeForm, MoveNodeForm, NodeQuery, RenameNodeForm, SaveNodeForm, catalog_html,
     normalize_slug, parse_parent_id, status_value, tree_html, visibility_value,
 };
 
@@ -490,4 +491,24 @@ pub async fn admin_node_delete(
         None => format!("/admin/docs/{book_id}"),
     };
     Ok(Ok(see_other(&redirect)))
+}
+
+pub async fn admin_node_move(
+    State(state): State<AppState>,
+    session: Session,
+    Path(id): Path<i64>,
+    Form(form): Form<MoveNodeForm>,
+) -> AppResult<axum::http::StatusCode> {
+    match require_user(&state, &session).await {
+        Ok(_) => {}
+        Err(e) => return Err(cloak_auth(e)),
+    };
+    let Some(_) = find_kb_node_by_id(&state.pool, id).await? else {
+        return Err(AppError::not_found("页面不存在"));
+    };
+    let parent_id = parse_parent_id(&form.parent_id);
+    let before_id = parse_parent_id(&form.before_id);
+    let now = Utc::now().format("%Y-%m-%dT%H:%M:%SZ").to_string();
+    move_kb_node(&state.pool, id, parent_id, before_id, &now).await?;
+    Ok(axum::http::StatusCode::NO_CONTENT)
 }
