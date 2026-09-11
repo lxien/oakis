@@ -9,50 +9,46 @@ code.hljs {
 }
 
 .hljs {
-    color: #1a1a1a;
-    background: #fafafa
+    color: #a9b7c6;
+    background: #2b2b2b
 }
 
 .hljs-subst, .hljs-title {
     font-weight: 400;
-    color: #1a1a1a
+    color: #a9b7c6
 }
 
 .hljs-comment, .hljs-quote {
-    color: #8a8a8a;
+    color: #808080;
     font-style: italic
 }
 
 .hljs-meta {
-    color: #5c5c5c
+    color: #bbb529
 }
 
 .hljs-tag {
-    background: #f0f0f0
+    background: transparent
 }
 
 .hljs-keyword, .hljs-literal, .hljs-name, .hljs-section, .hljs-selector-class, .hljs-selector-id, .hljs-selector-tag, .hljs-type {
     font-weight: 700;
-    color: #000000
+    color: #cc7832
 }
 
 .hljs-attribute, .hljs-link, .hljs-number, .hljs-regexp {
-    font-weight: 700;
-    color: #2a2a2a
-}
-
-.hljs-link, .hljs-number, .hljs-regexp {
-    font-weight: 400
+    font-weight: 400;
+    color: #6897bb
 }
 
 .hljs-string {
-    color: #3d3d3d;
-    font-weight: 600
+    color: #6a8759;
+    font-weight: 400
 }
 
 .hljs-bullet, .hljs-formula, .hljs-symbol {
-    color: #1a1a1a;
-    background: #f0f0f0;
+    color: #a9b7c6;
+    background: transparent;
     font-style: italic
 }
 
@@ -61,15 +57,22 @@ code.hljs {
 }
 
 .hljs-template-variable, .hljs-variable {
-    color: #444444
+    color: #9876aa
+}
+
+.hljs-title.function_,
+.hljs-title.class_ {
+    color: #ffc66d
 }
 
 .hljs-addition {
-    background: #e8e8e8
+    background: #294436;
+    color: #6a8759
 }
 
 .hljs-deletion {
-    background: #d0d0d0;
+    background: #484a4a;
+    color: #cc7832;
     text-decoration: line-through
 }
 
@@ -84,13 +87,16 @@ code.hljs {
 .prose pre,
 .page-post .prose pre,
 .page-docs .prose pre {
-    background: #fafafa;
-    border: 1px solid #d9d9d9;
+    background: #2b2b2b;
+    border: 1px solid #3c3f41;
     padding: 1rem 1.1rem;
     overflow-x: auto;
     border-radius: 0;
 }
 
+.prose pre code,
+.page-post .prose pre code,
+.page-docs .prose pre code,
 .prose pre code.hljs,
 .page-post .prose pre code.hljs,
 .page-docs .prose pre code.hljs {
@@ -100,7 +106,7 @@ code.hljs {
     overflow-x: visible;
     font-size: 0.92em;
     line-height: 1.55;
-    color: #1a1a1a;
+    color: #a9b7c6;
 }
 
 .prose :not(pre) > code {

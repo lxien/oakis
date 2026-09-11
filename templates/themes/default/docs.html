@@ -5,7 +5,7 @@
 
 {% block head %}
 {% include "themes/default/components/site_meta.html" %}
-<link rel="stylesheet" href="/static/css/highlight.css?v=7">
+<link rel="stylesheet" href="/static/css/highlight.css?v=9">
 {% endblock %}
 
 {% block body %}
@@ -26,7 +26,7 @@
         {% endif %}
       </div>
     </nav>
-    <nav class="docs-tree">
+    <nav class="docs-tree" data-book-id="{{ book.id }}">
       {% if !tree_html.is_empty() %}
       {{ tree_html|safe }}
       {% endif %}
@@ -131,7 +131,7 @@
 {% block scripts %}
 <script src="/static/js/highlight.min.js" defer></script>
 <script src="/static/js/highlight-init.js" defer></script>
-<script src="/static/js/kb-tree.js?v=3" defer></script>
+<script src="/static/js/kb-tree.js?v=4" defer></script>
 {% if is_home %}
 <script>
 document.querySelector(".docs-catalog")?.addEventListener("click", function (e) {
