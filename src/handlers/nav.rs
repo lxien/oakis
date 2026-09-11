@@ -32,7 +32,7 @@ fn assemble_nav_items(
     let page_ids = form_many(map, "nav_page_id");
     let labels = form_many(map, "nav_label");
     let urls = form_many(map, "nav_url");
-    let enabled_flags = form_many(map, "nav_enabled");
+    let visibilities = form_many(map, "nav_visibility");
 
     let n = kinds
         .len()
@@ -40,7 +40,7 @@ fn assemble_nav_items(
         .max(page_ids.len())
         .max(labels.len())
         .max(urls.len())
-        .max(enabled_flags.len());
+        .max(visibilities.len());
     if n > NavItemConfig::MAX_ITEMS {
         return Err((
             format!("导航最多 {} 项", NavItemConfig::MAX_ITEMS),
@@ -60,10 +60,12 @@ fn assemble_nav_items(
             .filter(|id| *id > 0);
         let label = labels.get(i).cloned().unwrap_or_default();
         let url = urls.get(i).cloned().unwrap_or_default();
-        let enabled = enabled_flags
-            .get(i)
-            .map(|s| s == "1" || s == "on" || s == "true")
-            .unwrap_or(true);
+        let visibility = NavItemConfig::normalize_visibility(
+            visibilities
+                .get(i)
+                .map(|s| s.as_str())
+                .unwrap_or(NavItemConfig::VIS_PUBLIC),
+        );
 
         match kind {
             "page" if page_id.is_none() && err.is_none() => {
@@ -81,7 +83,7 @@ fn assemble_nav_items(
             page_id,
             label,
             url,
-            enabled,
+            visibility,
         });
     }
 

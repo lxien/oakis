@@ -404,7 +404,10 @@ pub async fn move_kb_node(
     let mut target_ids = list_sibling_ids(&mut tx, book_id, new_parent_id).await?;
     target_ids.retain(|id| *id != node_id);
     let insert_at = match before_id {
-        Some(bid) => target_ids.iter().position(|id| *id == bid).unwrap_or(target_ids.len()),
+        Some(bid) => target_ids
+            .iter()
+            .position(|id| *id == bid)
+            .unwrap_or(target_ids.len()),
         None => target_ids.len(),
     };
     target_ids.insert(insert_at, node_id);

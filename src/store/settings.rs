@@ -104,7 +104,7 @@ pub async fn ensure_nav_items(pool: &SqlitePool) -> AppResult<()> {
         items.push(NavItemConfig {
             kind: NavItemConfig::KIND_PAGE.into(),
             page_id: Some(id),
-            enabled: true,
+            visibility: NavItemConfig::VIS_PUBLIC.into(),
             ..Default::default()
         });
     }

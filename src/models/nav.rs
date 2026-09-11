@@ -51,7 +51,7 @@ impl BuiltinRoute {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct NavItemConfig {
     #[serde(rename = "type")]
     pub kind: String,
@@ -63,23 +63,65 @@ pub struct NavItemConfig {
     pub label: String,
     #[serde(default)]
     pub url: String,
-    #[serde(default = "default_enabled")]
-    pub enabled: bool,
+    pub visibility: String,
 }
 
-fn default_enabled() -> bool {
-    true
+impl<'de> Deserialize<'de> for NavItemConfig {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        NavItemConfigDto::deserialize(deserializer).map(Into::into)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct NavItemConfigDto {
+    #[serde(rename = "type")]
+    kind: String,
+    #[serde(default)]
+    key: String,
+    #[serde(default)]
+    page_id: Option<i64>,
+    #[serde(default)]
+    label: String,
+    #[serde(default)]
+    url: String,
+    #[serde(default)]
+    visibility: Option<String>,
+    #[serde(default)]
+    enabled: Option<bool>,
+}
+
+impl From<NavItemConfigDto> for NavItemConfig {
+    fn from(dto: NavItemConfigDto) -> Self {
+        let visibility = match dto.visibility.as_deref() {
+            Some(v) => NavItemConfig::normalize_visibility(v),
+            None => match dto.enabled {
+                Some(false) => NavItemConfig::VIS_HIDDEN.into(),
+                _ => NavItemConfig::VIS_PUBLIC.into(),
+            },
+        };
+        Self {
+            kind: dto.kind,
+            key: dto.key,
+            page_id: dto.page_id,
+            label: dto.label,
+            url: dto.url,
+            visibility,
+        }
+    }
 }
 
 impl Default for NavItemConfig {
     fn default() -> Self {
         Self {
-            kind: "builtin".into(),
+            kind: Self::KIND_BUILTIN.into(),
             key: String::new(),
             page_id: None,
             label: String::new(),
             url: String::new(),
-            enabled: true,
+            visibility: Self::VIS_PUBLIC.into(),
         }
     }
 }
@@ -90,6 +132,38 @@ impl NavItemConfig {
     pub const KIND_CUSTOM: &'static str = "custom";
     pub const MAX_ITEMS: usize = 16;
 
+    pub const VIS_PUBLIC: &'static str = "public";
+    pub const VIS_PRIVATE: &'static str = "private";
+    pub const VIS_HIDDEN: &'static str = "hidden";
+
+    pub fn normalize_visibility(raw: &str) -> String {
+        match raw.trim() {
+            Self::VIS_PRIVATE => Self::VIS_PRIVATE.into(),
+            Self::VIS_HIDDEN => Self::VIS_HIDDEN.into(),
+            _ => Self::VIS_PUBLIC.into(),
+        }
+    }
+
+    pub fn is_public(&self) -> bool {
+        self.visibility == Self::VIS_PUBLIC
+    }
+
+    pub fn is_private(&self) -> bool {
+        self.visibility == Self::VIS_PRIVATE
+    }
+
+    pub fn is_hidden(&self) -> bool {
+        self.visibility == Self::VIS_HIDDEN
+    }
+
+    pub fn is_visible_to(&self, logged_in: bool) -> bool {
+        match self.visibility.as_str() {
+            Self::VIS_HIDDEN => false,
+            Self::VIS_PRIVATE => logged_in,
+            _ => true,
+        }
+    }
+
     pub fn system_defaults() -> Vec<Self> {
         BUILTIN_ROUTES
             .iter()
@@ -97,7 +171,7 @@ impl NavItemConfig {
                 kind: Self::KIND_BUILTIN.into(),
                 key: r.key.into(),
                 label: String::new(),
-                enabled: true,
+                visibility: Self::VIS_PUBLIC.into(),
                 ..Default::default()
             })
             .collect()
@@ -126,10 +200,10 @@ impl NavItemConfig {
     }
 
     pub fn parse_list(json: &str) -> Vec<Self> {
-        let Ok(raw) = serde_json::from_str::<Vec<NavItemConfig>>(json) else {
+        let Ok(raw) = serde_json::from_str::<Vec<NavItemConfigDto>>(json) else {
             return Self::system_defaults();
         };
-        Self::normalize_list(raw)
+        Self::normalize_list(raw.into_iter().map(Into::into).collect())
     }
 
     pub fn normalize_list(raw: Vec<Self>) -> Vec<Self> {
@@ -137,6 +211,7 @@ impl NavItemConfig {
         let mut seen_builtin = std::collections::HashSet::new();
 
         for item in raw.into_iter().take(Self::MAX_ITEMS) {
+            let visibility = Self::normalize_visibility(&item.visibility);
             match item.kind.as_str() {
                 Self::KIND_BUILTIN => {
                     let key = item.key.trim().to_ascii_lowercase();
@@ -150,7 +225,7 @@ impl NavItemConfig {
                         page_id: None,
                         label,
                         url: String::new(),
-                        enabled: item.enabled,
+                        visibility,
                     });
                 }
                 Self::KIND_PAGE => {
@@ -164,7 +239,7 @@ impl NavItemConfig {
                         page_id: Some(page_id),
                         label,
                         url: String::new(),
-                        enabled: item.enabled,
+                        visibility,
                     });
                 }
                 Self::KIND_CUSTOM => {
@@ -181,7 +256,7 @@ impl NavItemConfig {
                         page_id: None,
                         label,
                         url,
-                        enabled: item.enabled,
+                        visibility,
                     });
                 }
                 _ => {}
@@ -196,6 +271,7 @@ impl NavItemConfig {
         let mut seen_builtin = std::collections::HashSet::new();
 
         for item in raw.into_iter().take(Self::MAX_ITEMS) {
+            let visibility = Self::normalize_visibility(&item.visibility);
             match item.kind.as_str() {
                 Self::KIND_BUILTIN => {
                     let key = item.key.trim().to_ascii_lowercase();
@@ -209,7 +285,7 @@ impl NavItemConfig {
                         page_id: None,
                         label,
                         url: String::new(),
-                        enabled: item.enabled,
+                        visibility,
                     });
                 }
                 Self::KIND_PAGE => {
@@ -220,7 +296,7 @@ impl NavItemConfig {
                         page_id: item.page_id.filter(|id| *id > 0),
                         label,
                         url: String::new(),
-                        enabled: item.enabled,
+                        visibility,
                     });
                 }
                 Self::KIND_CUSTOM => {
@@ -235,7 +311,7 @@ impl NavItemConfig {
                         page_id: None,
                         label,
                         url,
-                        enabled: item.enabled,
+                        visibility,
                     });
                 }
                 _ => {}
@@ -258,7 +334,7 @@ impl NavItemConfig {
             .map(|r| Self {
                 kind: Self::KIND_BUILTIN.into(),
                 key: r.key.into(),
-                enabled: true,
+                visibility: Self::VIS_PUBLIC.into(),
                 ..Default::default()
             })
             .collect();
@@ -327,7 +403,7 @@ pub fn resolve_nav_items(
     let mut out = Vec::with_capacity(configs.len());
 
     for cfg in configs {
-        if !cfg.enabled {
+        if !cfg.is_visible_to(logged_in) {
             continue;
         }
         match cfg.kind.as_str() {
@@ -354,6 +430,7 @@ pub fn resolve_nav_items(
                 let Some(page) = pages.iter().find(|p| p.id == page_id) else {
                     continue;
                 };
+                // Page ACL: private pages never appear for guests.
                 if !logged_in && page.is_private() {
                     continue;
                 }

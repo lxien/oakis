@@ -1167,8 +1167,8 @@ body {
     width: 120px;
 }
 
-.admin-nav-enabled {
-    width: 80px;
+.admin-nav-visibility {
+    width: 88px;
 }
 
 .admin-nav-row .layui-input,

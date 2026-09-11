@@ -26,10 +26,11 @@
             <div class="layui-input-inline admin-nav-label">
               <input type="text" name="nav_label" value="{{ item.label }}" maxlength="40" placeholder="自定义名称" class="layui-input">
             </div>
-            <div class="layui-input-inline admin-nav-enabled">
-              <select name="nav_enabled" lay-ignore>
-                <option value="1" {% if item.enabled %}selected{% endif %}>显示</option>
-                <option value="0" {% if !item.enabled %}selected{% endif %}>隐藏</option>
+            <div class="layui-input-inline admin-nav-visibility">
+              <select name="nav_visibility" lay-ignore>
+                <option value="public" {% if item.is_public() %}selected{% endif %}>公开</option>
+                <option value="private" {% if item.is_private() %}selected{% endif %}>私密</option>
+                <option value="hidden" {% if item.is_hidden() %}selected{% endif %}>隐藏</option>
               </select>
             </div>
             <div class="layui-btn-group">
@@ -60,10 +61,11 @@
             <div class="layui-input-inline admin-nav-label">
               <input type="text" name="nav_label" value="{{ item.label }}" maxlength="40" placeholder="显示名" class="layui-input">
             </div>
-            <div class="layui-input-inline admin-nav-enabled">
-              <select name="nav_enabled" lay-ignore>
-                <option value="1" {% if item.enabled %}selected{% endif %}>显示</option>
-                <option value="0" {% if !item.enabled %}selected{% endif %}>隐藏</option>
+            <div class="layui-input-inline admin-nav-visibility">
+              <select name="nav_visibility" lay-ignore>
+                <option value="public" {% if item.is_public() %}selected{% endif %}>公开</option>
+                <option value="private" {% if item.is_private() %}selected{% endif %}>私密</option>
+                <option value="hidden" {% if item.is_hidden() %}selected{% endif %}>隐藏</option>
               </select>
             </div>
             <div class="layui-btn-group">
@@ -100,10 +102,11 @@
             <div class="layui-input-inline admin-nav-label">
               <input type="text" name="nav_label" value="" maxlength="40" placeholder="显示名" class="layui-input">
             </div>
-            <div class="layui-input-inline admin-nav-enabled">
-              <select name="nav_enabled" lay-ignore>
-                <option value="1" selected>显示</option>
-                <option value="0">隐藏</option>
+            <div class="layui-input-inline admin-nav-visibility">
+              <select name="nav_visibility" lay-ignore>
+                <option value="public" selected>公开</option>
+                <option value="private">私密</option>
+                <option value="hidden">隐藏</option>
               </select>
             </div>
             <div class="layui-btn-group">
@@ -125,5 +128,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/nav-settings.js?v=2"></script>
+<script src="/static/js/nav-settings.js?v=3"></script>
 {% endblock %}
