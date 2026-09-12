@@ -1526,6 +1526,24 @@ body.admin-login {
     min-width: 104px;
 }
 
+.kb-menu.is-floating {
+    position: fixed;
+    z-index: 4000;
+}
+
+.kb-action-wrap.is-menu-open,
+.kb-side-action.is-menu-open {
+    z-index: 5;
+}
+
+.kb-tree-item.is-menu-open {
+    z-index: 40;
+}
+
+.kb-row.is-menu-open {
+    z-index: 50;
+}
+
 .kb-root-add > .kb-menu {
     right: 0;
     left: auto;
@@ -1757,9 +1775,11 @@ body.admin-login {
     gap: 0;
     flex-shrink: 0;
     position: relative;
+    z-index: 2;
 }
 
 .kb-row:hover > .kb-row-actions,
+.kb-row.is-menu-open > .kb-row-actions,
 .kb-tree-item.is-active > .kb-row > .kb-row-actions,
 .kb-tree-item.is-active > .kb-branch > summary > .kb-row-actions {
     display: inline-flex;
