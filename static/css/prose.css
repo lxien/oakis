@@ -8,7 +8,7 @@
     --prose-accent-deep: var(--accent-deep, #000000);
     --prose-code-bg: var(--code-bg, #f0f0f0);
     --prose-radius: var(--radius, 0);
-    --prose-font: var(--font-display, "Crimson Pro", "Noto Serif SC", Georgia, "Songti SC", serif);
+    --prose-font: var(--font-display, "Alibaba PuHuiTi 3.0", "PingFang SC", sans-serif);
     --prose-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
     --prose-size: 1.08rem;
     --prose-leading: 1.78;

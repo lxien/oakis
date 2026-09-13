@@ -12,9 +12,9 @@
     --danger: #2a2a2a;
     --shadow: none;
     --radius: 0;
-    --font-display: "Crimson Pro", "Noto Serif SC", "Source Serif 4", "Songti SC", Georgia, serif;
-    --font-body: "Crimson Pro", "Noto Serif SC", "Source Serif 4", "Songti SC", Georgia, serif;
-    --font-ui: "IBM Plex Sans", "PingFang SC", "Helvetica Neue", sans-serif;
+    --font-display: "Alibaba PuHuiTi 3.0", "PingFang SC", "Helvetica Neue", sans-serif;
+    --font-body: "Alibaba PuHuiTi 3.0", "PingFang SC", "Helvetica Neue", sans-serif;
+    --font-ui: "Alibaba PuHuiTi 3.0", "PingFang SC", "Helvetica Neue", sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
     --reading: 1.72;
     --shell-max: 1120px;

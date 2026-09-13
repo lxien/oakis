@@ -1,73 +1,33 @@
 @font-face {
-    font-family: "Crimson Pro";
+    font-family: "Alibaba PuHuiTi 3.0";
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url("/static/fonts/crimson-pro-latin-400-normal.woff2") format("woff2");
+    src: url("/static/fonts/alibaba-puhuiti-400-normal.woff2") format("woff2");
 }
 
 @font-face {
-    font-family: "Crimson Pro";
-    font-style: italic;
-    font-weight: 400;
-    font-display: swap;
-    src: url("/static/fonts/crimson-pro-latin-400-italic.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "Crimson Pro";
+    font-family: "Alibaba PuHuiTi 3.0";
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    src: url("/static/fonts/crimson-pro-latin-500-normal.woff2") format("woff2");
+    src: url("/static/fonts/alibaba-puhuiti-500-normal.woff2") format("woff2");
 }
 
 @font-face {
-    font-family: "Crimson Pro";
+    font-family: "Alibaba PuHuiTi 3.0";
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src: url("/static/fonts/crimson-pro-latin-600-normal.woff2") format("woff2");
+    src: url("/static/fonts/alibaba-puhuiti-600-normal.woff2") format("woff2");
 }
 
 @font-face {
-    font-family: "Crimson Pro";
+    font-family: "Alibaba PuHuiTi 3.0";
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url("/static/fonts/crimson-pro-latin-700-normal.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "IBM Plex Sans";
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url("/static/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "IBM Plex Sans";
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url("/static/fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "IBM Plex Sans";
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url("/static/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "IBM Plex Sans";
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url("/static/fonts/ibm-plex-sans-latin-700-normal.woff2") format("woff2");
+    src: url("/static/fonts/alibaba-puhuiti-700-normal.woff2") format("woff2");
 }
 
 @font-face {
@@ -84,28 +44,4 @@
     font-weight: 500;
     font-display: swap;
     src: url("/static/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "Noto Serif SC";
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url("/static/fonts/noto-serif-sc-chinese-simplified-400-normal.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "Noto Serif SC";
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url("/static/fonts/noto-serif-sc-chinese-simplified-600-normal.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "Noto Serif SC";
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url("/static/fonts/noto-serif-sc-chinese-simplified-700-normal.woff2") format("woff2");
 }
