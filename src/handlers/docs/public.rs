@@ -3,7 +3,7 @@ use axum::response::Html;
 use tower_sessions::Session;
 
 use crate::infra::error::{AppError, AppResult, render};
-use crate::infra::markdown::render_markdown;
+use crate::infra::markdown::{TocItem, render_markdown_with_toc};
 use crate::infra::state::AppState;
 use crate::models::{KbBook, KbNeighbor, KbTreeNode};
 use crate::store::{
@@ -74,6 +74,7 @@ pub async fn docs_book(
         catalog,
         doc_count,
         word_count,
+        Vec::new(),
     )
 }
 
@@ -106,7 +107,7 @@ pub async fn docs_page(
     let tree = build_public_kb_tree(&nodes, shell.logged_in);
     let crumbs = kb_breadcrumbs(&nodes, &page, &book.slug);
     let (prev, next) = kb_page_neighbors(&tree, page.id);
-    let content_html = render_markdown(&page.content_md);
+    let (content_html, toc) = render_markdown_with_toc(&page.content_md);
 
     render_book_page(
         &shell.settings,
@@ -132,6 +133,7 @@ pub async fn docs_page(
         String::new(),
         0,
         0,
+        toc,
     )
 }
 
@@ -159,6 +161,7 @@ fn render_book_page(
     catalog_html: String,
     doc_count: usize,
     word_count: usize,
+    toc: Vec<TocItem>,
 ) -> AppResult<Html<String>> {
     render(DocsBookTemplate {
         settings: settings.clone(),
@@ -185,5 +188,6 @@ fn render_book_page(
         } else {
             None
         },
+        toc,
     })
 }

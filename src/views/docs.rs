@@ -1,5 +1,6 @@
 use askama::Template;
 
+use crate::infra::markdown::TocItem;
 use crate::models::{KbBook, KbCrumb, KbNeighbor, NavItemView, SiteSettings};
 
 #[derive(Template)]
@@ -39,6 +40,7 @@ pub struct DocsBookTemplate {
     pub doc_count: usize,
     pub word_count: usize,
     pub edit_href: Option<String>,
+    pub toc: Vec<TocItem>,
 }
 
 impl DocsBookTemplate {
@@ -64,6 +66,10 @@ impl DocsBookTemplate {
 
     pub fn has_summary(&self) -> bool {
         !self.content_html.is_empty()
+    }
+
+    pub fn has_toc(&self) -> bool {
+        self.toc.len() >= 2
     }
 }
 

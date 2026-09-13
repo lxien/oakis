@@ -12,7 +12,7 @@
 {% include "themes/default/components/public_header.html" %}
 
 <div class="docs-layout">
-  <aside class="docs-sidebar" aria-label="目录">
+  <aside class="docs-sidebar" aria-label="知识库导航">
     <div class="docs-sidebar-head">
       <a class="docs-sidebar-back" href="/docs">← 全部知识库</a>
       <div class="docs-sidebar-title">{{ book.title }}</div>
@@ -123,6 +123,21 @@
     </article>
     {% endif %}
   </main>
+
+  <aside class="docs-toc" aria-label="本页目录">
+    {% if has_toc() %}
+    <div class="docs-toc-inner">
+      <h2 class="docs-toc-title">本页目录</h2>
+      <nav class="docs-toc-nav">
+        <ol class="docs-toc-list">
+          {% for item in toc %}
+          <li class="docs-toc-l{{ item.level }}"><a href="#{{ item.id }}">{{ item.text }}</a></li>
+          {% endfor %}
+        </ol>
+      </nav>
+    </div>
+    {% endif %}
+  </aside>
 </div>
 
 {% include "themes/default/components/site_footer.html" %}

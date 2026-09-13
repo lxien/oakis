@@ -44,14 +44,7 @@
 html {
     scroll-padding-top: 72px;
     height: 100%;
-
-    scrollbar-gutter: stable;
-}
-
-@supports not (scrollbar-gutter: stable) {
-    html {
-        overflow-y: scroll;
-    }
+    overflow-y: scroll;
 }
 
 html, body {
@@ -261,7 +254,7 @@ body.page-admin {
     border-radius: 0;
     font-family: var(--font-ui);
     font-weight: 500;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     position: relative;
@@ -275,18 +268,7 @@ body.page-admin {
 
 .site-nav .nav-link.is-active {
     color: var(--ink);
-    font-weight: 600;
-}
-
-.site-nav .nav-link.is-active::after {
-    content: "";
-    position: absolute;
-    left: 0.55rem;
-    right: 0.55rem;
-    bottom: 0.1rem;
-    height: 1px;
-    border-radius: 0;
-    background: var(--ink);
+    font-weight: 700;
 }
 
 .nav-search {
@@ -1463,6 +1445,13 @@ a.aside-author:hover {
     padding-right: 0;
 }
 
+.page-docs .site-footer {
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}
+
 @media (max-width: 640px) {
     .page-post .post-card {
         padding: 0.15rem 0 1.25rem;
@@ -1523,7 +1512,7 @@ a.aside-author:hover {
 
     .site-nav .nav-link {
         padding: 0.35rem 0.45rem;
-        font-size: 0.84rem;
+        font-size: 0.86rem;
     }
 
     .site-topbar .logo-text {
@@ -3272,14 +3261,52 @@ a.tax-chip:hover {
 
 .page-docs .docs-layout {
     display: grid;
-    grid-template-columns: minmax(200px, 270px) minmax(0, 1fr);
+    grid-template-columns: minmax(200px, 280px) minmax(0, 1fr) minmax(180px, 240px);
     gap: 0;
-    width: var(--shell);
+    width: 100%;
     max-width: none;
-    margin: 0 auto;
+    margin: 0;
     min-height: 0;
     align-items: stretch;
-    border-top: 1px solid var(--line);
+    border-top: 0;
+}
+
+body.page-docs,
+.page-docs .docs-sidebar,
+.page-docs .docs-main,
+.page-docs .docs-toc {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+}
+
+body.page-docs::-webkit-scrollbar,
+.page-docs .docs-sidebar::-webkit-scrollbar,
+.page-docs .docs-main::-webkit-scrollbar,
+.page-docs .docs-toc::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+body.page-docs::-webkit-scrollbar-track,
+.page-docs .docs-sidebar::-webkit-scrollbar-track,
+.page-docs .docs-main::-webkit-scrollbar-track,
+.page-docs .docs-toc::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body.page-docs::-webkit-scrollbar-thumb,
+.page-docs .docs-sidebar::-webkit-scrollbar-thumb,
+.page-docs .docs-main::-webkit-scrollbar-thumb,
+.page-docs .docs-toc::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.22);
+    border-radius: 999px;
+}
+
+body.page-docs::-webkit-scrollbar-thumb:hover,
+.page-docs .docs-sidebar::-webkit-scrollbar-thumb:hover,
+.page-docs .docs-main::-webkit-scrollbar-thumb:hover,
+.page-docs .docs-toc::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.36);
 }
 
 .page-docs .docs-sidebar {
@@ -3288,11 +3315,11 @@ a.tax-chip:hover {
     position: sticky;
     top: 3.5rem;
     align-self: stretch;
-
     min-height: calc(100dvh - 3.5rem);
     height: calc(100dvh - 3.5rem);
     max-height: calc(100dvh - 3.5rem);
     overflow: auto;
+    scrollbar-gutter: stable;
     box-sizing: border-box;
 }
 
@@ -3469,8 +3496,9 @@ a.tax-chip:hover {
     height: 0.75rem;
     opacity: 0.55;
     background: currentColor;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / 0.7rem 0.7rem no-repeat;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / 0.7rem 0.7rem no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / 0.75rem 0.75rem no-repeat;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / 0.75rem 0.75rem no-repeat;
+    transform-origin: center;
     transition: transform .15s ease;
 }
 
@@ -3546,10 +3574,69 @@ a.tax-chip:hover {
 .page-docs .docs-main {
     padding: 1.75rem 2rem 3rem;
     min-width: 0;
+    overflow: auto;
+}
+
+.page-docs .docs-toc {
+    border-left: 1px solid var(--line);
+    padding: 1.25rem 1rem 2rem 0.85rem;
+    position: sticky;
+    top: 3.5rem;
+    align-self: stretch;
+    min-height: calc(100dvh - 3.5rem);
+    height: calc(100dvh - 3.5rem);
+    max-height: calc(100dvh - 3.5rem);
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.page-docs .docs-toc-inner {
+    position: sticky;
+    top: 0;
+}
+
+.page-docs .docs-toc-title {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+}
+
+.page-docs .docs-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.page-docs .docs-toc-list a {
+    display: block;
+    padding: 0.28rem 0.45rem;
+    border-radius: var(--radius);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.86rem;
+    line-height: 1.4;
+    border-left: 2px solid transparent;
+}
+
+.page-docs .docs-toc-list a:hover {
+    color: var(--ink);
+    background: var(--mist);
+}
+
+.page-docs .docs-toc-l2 a {
+    font-weight: 500;
+}
+
+.page-docs .docs-toc-l3 a {
+    padding-left: 1rem;
+    font-size: 0.82rem;
 }
 
 .page-docs .docs-home {
-    max-width: 46rem;
+    max-width: 52rem;
 }
 
 .page-docs .docs-home-head {
@@ -3887,7 +3974,7 @@ a.tax-chip:hover {
 .page-docs .docs-article .prose {
     --prose-size: 1.05rem;
     --prose-leading: var(--reading);
-    max-width: 46rem;
+    max-width: 52rem;
 }
 
 .page-docs .docs-pager {
@@ -3895,7 +3982,7 @@ a.tax-chip:hover {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-top: 2.5rem;
-    max-width: 46rem;
+    max-width: 52rem;
 }
 
 .page-docs .docs-pager a {
@@ -3933,6 +4020,16 @@ a.tax-chip:hover {
     font-weight: 500;
 }
 
+@media (max-width: 1100px) {
+    .page-docs .docs-layout {
+        grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+    }
+
+    .page-docs .docs-toc {
+        display: none;
+    }
+}
+
 @media (max-width: 860px) {
     .page-docs .docs-layout {
         grid-template-columns: 1fr;
@@ -3946,6 +4043,11 @@ a.tax-chip:hover {
         border-right: 0;
         border-bottom: 1px solid var(--line);
         padding-bottom: 1rem;
+        scrollbar-gutter: auto;
+    }
+
+    .page-docs .docs-toc {
+        display: none;
     }
 
     .page-docs .docs-main {
