@@ -133,15 +133,56 @@
             syncExpandAllButton(tree);
         }, true);
 
-        tree.addEventListener("click", function (e) {
-            var summary = e.target.closest("details.kb-branch > summary");
-            if (!summary || !tree.contains(summary)) return;
-            if (e.target.closest("a, button, .kb-row-actions, .kb-action-wrap, .kb-menu")) {
-                return;
-            }
-            if (!e.target.closest(".kb-chevron:not(.kb-chevron-leaf)")) {
+        tree.addEventListener(
+            "click",
+            function (e) {
+                var summary = e.target.closest("details.kb-branch > summary");
+                if (!summary || !tree.contains(summary)) return;
+
+                var details = summary.parentElement;
+                if (!details || !details.matches || !details.matches("details.kb-branch")) return;
+
+                if (e.target.closest("button, .kb-row-actions, .kb-action-wrap, .kb-menu")) {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (e.target.closest(".kb-chevron:not(.kb-chevron-leaf)")) {
+                    return;
+                }
+
+                var link = e.target.closest("a[href]");
+                if (link && summary.contains(link)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    details.open = true;
+                    writeOpenIds(tree, collectOpenIds(tree));
+                    syncExpandAllButton(tree);
+
+                    var href = link.getAttribute("href");
+                    if (!href) return;
+                    if (e.metaKey || e.ctrlKey) {
+                        window.open(href, "_blank", "noopener");
+                        return;
+                    }
+                    if (link.target === "_blank") {
+                        window.open(href, "_blank", "noopener");
+                        return;
+                    }
+                    window.location.href = href;
+                    return;
+                }
+
+                if (details.open) {
+                    e.preventDefault();
+                    return;
+                }
+                details.open = true;
                 e.preventDefault();
-            }
-        });
+                writeOpenIds(tree, collectOpenIds(tree));
+                syncExpandAllButton(tree);
+            },
+            true
+        );
     });
 })();
