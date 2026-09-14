@@ -14,7 +14,6 @@
 
 </div>
 
-![dashboard.png](docs/dashboard.png)
 
 **Oakis** 是一个轻量级的跨平台 **CMS**
 
